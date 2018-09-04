@@ -3,27 +3,13 @@
 
 import PackageDescription
 
-//let package = Package(
-//    name: "AndroidUIKit",
-//    targets: [
-//        Target(
-//            name: "AndroidUIKitDemo",
-//            dependencies: [.Target(name: "AndroidUIKit")]),
-//        Target(
-//            name: "AndroidUIKit"
-//        )
-//    ],
-//    dependencies: [],
-//    exclude: ["Demo"]
-//)
-
 let package = Package(
     name: "AndroidUIKit",
     products: [
         .library(name: "AndroidUIKit", type: .dynamic, targets: ["AndroidUIKit"]),
         ],
     dependencies: [
-        .package(url: "git@github.com:PureSwift/Android.git", .revision("becd2aebfa3f0f3162b3a8cdf646fa3142998d8d"))
+        .package(url: "git@github.com:PureSwift/Android.git", .branch("master"))
     ],
     targets: [
         .target(
