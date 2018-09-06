@@ -14,37 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "Android::Android"
-               BuildableName = "Android.framework"
-               BlueprintName = "Android"
-               ReferencedContainer = "container:AndroidUIKit.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AndroidUIKit::AndroidUIKit"
-               BuildableName = "AndroidUIKit"
-               BlueprintName = "AndroidUIKit"
-               ReferencedContainer = "container:AndroidUIKit.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "Bluetooth::Bluetooth"
-               BuildableName = "Bluetooth.framework"
-               BlueprintName = "Bluetooth"
+               BlueprintIdentifier = "java_swift::java_swift"
+               BuildableName = "java_swift.framework"
+               BlueprintName = "java_swift"
                ReferencedContainer = "container:AndroidUIKit.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -70,9 +42,23 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "java_swift::java_swift"
-               BuildableName = "java_swift.framework"
-               BlueprintName = "java_swift"
+               BlueprintIdentifier = "Bluetooth::Bluetooth"
+               BuildableName = "Bluetooth.framework"
+               BlueprintName = "Bluetooth"
+               ReferencedContainer = "container:AndroidUIKit.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "JNI::JNI"
+               BuildableName = "JNI.framework"
+               BlueprintName = "JNI"
                ReferencedContainer = "container:AndroidUIKit.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -98,9 +84,23 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "JNI::JNI"
-               BuildableName = "JNI.framework"
-               BlueprintName = "JNI"
+               BlueprintIdentifier = "Android::Android"
+               BuildableName = "Android.framework"
+               BlueprintName = "Android"
+               ReferencedContainer = "container:AndroidUIKit.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AndroidUIKit::AndroidUIKit"
+               BuildableName = "AndroidUIKit"
+               BlueprintName = "AndroidUIKit"
                ReferencedContainer = "container:AndroidUIKit.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -129,9 +129,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "Android::Android"
-            BuildableName = "Android.framework"
-            BlueprintName = "Android"
+            BlueprintIdentifier = "java_swift::java_swift"
+            BuildableName = "java_swift.framework"
+            BlueprintName = "java_swift"
             ReferencedContainer = "container:AndroidUIKit.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

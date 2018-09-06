@@ -289,17 +289,7 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
         self.reusableCells[indexPath] = nil
         
         // mark as visible
-        //self.visibleCells = self.visibleCells.filter({ $0.value !== cell })
-        
-        var newVisibleCells: [IndexPath: UITableViewCell] = [:]
-        
-        for item in self.visibleCells {
-            if(item.value !== cell){
-                newVisibleCells[item.key] = item.value
-            }
-        }
-        
-        self.visibleCells = newVisibleCells
+        self.visibleCells = self.visibleCells.filter({ $0.value !== cell })
         
         self.visibleCells[indexPath] = cell
     }
