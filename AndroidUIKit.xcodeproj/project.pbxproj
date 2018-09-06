@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5159C4B2213F21A500A7BED8 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5159C4B1213F218D00A7BED8 /* JavaVM.framework */; };
+		517F8FAB21419D7500CFDD18 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517F8FAA21419D7500CFDD18 /* main.swift */; };
 		OBJ_1108 /* AndroidManifestPermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_50 /* AndroidManifestPermission.swift */; };
 		OBJ_1109 /* AndroidManifestPermissionGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_51 /* AndroidManifestPermissionGroup.swift */; };
 		OBJ_1110 /* AndroidNamespace.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_52 /* AndroidNamespace.swift */; };
@@ -1197,6 +1198,7 @@
 
 /* Begin PBXFileReference section */
 		5159C4B1213F218D00A7BED8 /* JavaVM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaVM.framework; path = System/Library/Frameworks/JavaVM.framework; sourceTree = SDKROOT; };
+		517F8FAA21419D7500CFDD18 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		"Android::Android::Product" /* Android.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Android.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"AndroidUIKit::AndroidUIKit::Product" /* AndroidUIKit */ = {isa = PBXFileReference; lastKnownFileType = text; path = AndroidUIKit; sourceTree = BUILT_PRODUCTS_DIR; };
 		"Bluetooth::Bluetooth::Product" /* Bluetooth.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Bluetooth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2973,7 +2975,7 @@
 			path = ".build/checkouts/Android.git--7233497289629108340/Sources";
 			sourceTree = SOURCE_ROOT;
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
 				OBJ_6 /* Package.swift */,
@@ -2984,7 +2986,6 @@
 				OBJ_1095 /* Products */,
 				5159C4B0213F218A00A7BED8 /* Frameworks */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_588 /* java_util 2.3.2 */ = {
@@ -3329,6 +3330,7 @@
 				OBJ_41 /* UIViewController.swift */,
 				OBJ_42 /* UIWindow.swift */,
 				OBJ_43 /* WeakReference.swift */,
+				517F8FAA21419D7500CFDD18 /* main.swift */,
 			);
 			path = Sources;
 			sourceTree = SOURCE_ROOT;
@@ -3768,7 +3770,7 @@
 			knownRegions = (
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			productRefGroup = OBJ_1095 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -3933,6 +3935,7 @@
 				OBJ_1261 /* UIViewAnimation.swift in Sources */,
 				OBJ_1262 /* UIViewAutoresizing.swift in Sources */,
 				OBJ_1263 /* UIViewContentMode.swift in Sources */,
+				517F8FAB21419D7500CFDD18 /* main.swift in Sources */,
 				OBJ_1264 /* UIViewController.swift in Sources */,
 				OBJ_1265 /* UIWindow.swift in Sources */,
 				OBJ_1266 /* WeakReference.swift in Sources */,

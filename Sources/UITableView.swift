@@ -101,7 +101,7 @@ final public class UITableView: UIView {
         
         guard let recyclerView = recyclerView
             else { fatalError("Missing Android RecyclerView") }
-
+        
         let frameDp = CGRect.applyDP(rect: frame)
         
         // set origin
@@ -112,7 +112,7 @@ final public class UITableView: UIView {
         recyclerView.layoutParams = Android.Widget.FrameLayout.FLayoutParams(width: Int(frameDp.width), height: Int(frameDp.height))
         
         recyclerView.layoutManager = AndroidWidgetRecyclerViewLinearLayoutManager(context: context)
-
+        
         androidView.addView(recyclerView)
         
         let adapter = UITableViewRecyclerViewAdapter(tableView: self)
@@ -131,7 +131,7 @@ final public class UITableView: UIView {
     /// Registers a class for use in creating new table cells.
     public func register(_ cellClass: UITableViewCell.Type?,
                          forCellReuseIdentifier identifier: String) {
-    
+        
         assert(identifier.isEmpty == false, "Identifier must not be an empty string")
         
         registeredCells[identifier] = cellClass
@@ -289,7 +289,18 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
         self.reusableCells[indexPath] = nil
         
         // mark as visible
-        self.visibleCells = self.visibleCells.filter({ $0.value !== cell })
+        //self.visibleCells = self.visibleCells.filter({ $0.value !== cell })
+        
+        var newVisibleCells: [IndexPath: UITableViewCell] = [:]
+        
+        for item in self.visibleCells {
+            if(item.value !== cell){
+                newVisibleCells[item.key] = item.value
+            }
+        }
+        
+        self.visibleCells = newVisibleCells
+        
         self.visibleCells[indexPath] = cell
     }
     
@@ -302,7 +313,7 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
         guard let dataSource = tableView.dataSource else {
             return 0
         }
-
+        
         return dataSource.tableView(tableView, numberOfRowsInSection: dataSource.numberOfSections(in: tableView))
     }
 }
@@ -497,3 +508,4 @@ public extension UITableViewDelegate {
         return proposedDestinationIndexPath
     }
 }
+

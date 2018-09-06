@@ -113,7 +113,7 @@ open class UIViewController: UIResponder {
     /// The value in this property is used primarily when displaying the view controller’s
     /// content in a popover but may also be used in other situations.
     public final var preferredContentSize: CGSize = .zero
-
+    
     // MARK: - Presenting View Controllers
     
     // MARK: - Responding to View Events
@@ -312,7 +312,7 @@ open class UIViewController: UIResponder {
     
     // Created on-demand so that a view controller may customize its navigation appearance.
     /// The navigation item used to represent the view controller in a parent's navigation bar.
-    public lazy var navigationItem: UINavigationItem = UINavigationItem(title: title ?? "")
+    public lazy var navigationItem: UINavigationItem = UINavigationItem(title: "")
     
     // If YES, then when this view controller is pushed into a controller hierarchy with a bottom bar (like a tab bar), the bottom bar will slide out. Default is NO.
     public var hidesBottomBarWhenPushed: Bool = false
@@ -335,10 +335,10 @@ open class UIViewController: UIResponder {
                 
             } else {
                 
-               controller = controller?.parent
+                controller = controller?.parent
             }
         }
-    
+        
         return nil
     }
 }

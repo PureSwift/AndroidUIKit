@@ -33,19 +33,19 @@ open class UINavigationController: UIViewController {
     public lazy var navigationBar = UINavigationBar()
     
     /*
-    public var isNavigationBarHidden: Bool {
-        
-        get { return _isNavigationBarHidden }
-        
-        set {
-            navigationBar.isHidden = newValue
-            _isNavigationBarHidden = newValue
-        }
-    }
-    */
+     public var isNavigationBarHidden: Bool {
+     
+     get { return _isNavigationBarHidden }
+     
+     set {
+     navigationBar.isHidden = newValue
+     _isNavigationBarHidden = newValue
+     }
+     }
+     */
     
-    private var _isNavigationBarHidden: Bool = false
- 
+    fileprivate var _isNavigationBarHidden: Bool = false
+    
     public lazy var toolbar = UIToolbar()
     
     public var isToolbarHidden: Bool {
@@ -124,7 +124,7 @@ open class UINavigationController: UIViewController {
     }
     
     private func contentRect(for bounds: CGRect) -> (content: CGRect, navigationBar: CGRect, toolbar: CGRect) {
-
+        
         var contentRect = bounds
         
         let androidActionBarHeight = CGFloat.applyDP(pixels: UIScreen.main.activity.actionBarHeighPixels)
@@ -158,7 +158,7 @@ open class UINavigationController: UIViewController {
         return (contentRect, navigationBarRect, toolbarRect)
     }
     
-    private func updateVisibleViewController(animated: Bool) {
+    fileprivate func updateVisibleViewController(animated: Bool) {
         
         guard let newVisibleViewController = self.topViewController
             else { fatalError("Must have visible view controller") }
@@ -244,7 +244,7 @@ public extension UINavigationController {
     }
 }
 
- // MARK: - Pushing and Popping Stack Items
+// MARK: - Pushing and Popping Stack Items
 
 public extension UINavigationController {
     
@@ -386,20 +386,21 @@ extension UINavigationController: UINavigationBarDelegate {
     
     private func showDefaultBackButton(androidToolbar: AndroidToolbar) {
         
-            let arrowBackId = UIScreen.main.activity.getIdentifier(name: "ic_arrow_back", type: "drawable")
-            let navigationVectorDrawableIcon = AndroidVectorDrawableCompat.create(res:  UIScreen.main.activity.resources!, resId: arrowBackId, theme: nil)
-            
-            guard let navigationVectorIcon = navigationVectorDrawableIcon
-                else { return }
-            
-            var navIconDrawable = navigationVectorIcon as AndroidGraphicsDrawableDrawable
-            navIconDrawable = AndroidDrawableCompat.wrap(drawable: navIconDrawable)
-            AndroidDrawableCompat.setTint(drawable: navIconDrawable, color: AndroidGraphicsColor.WHITE)
-            
-            navigationBar.androidToolbar.navigationIcon = navIconDrawable
-            
-            navigationBar.androidToolbar.setNavigationOnClickListener {
-                self.popViewController(animated: false)
+        let arrowBackId = UIScreen.main.activity.getIdentifier(name: "ic_arrow_back", type: "drawable")
+        let navigationVectorDrawableIcon = AndroidVectorDrawableCompat.create(res:  UIScreen.main.activity.resources!, resId: arrowBackId, theme: nil)
+        
+        guard let navigationVectorIcon = navigationVectorDrawableIcon
+            else { return }
+        
+        var navIconDrawable = navigationVectorIcon as AndroidGraphicsDrawableDrawable
+        navIconDrawable = AndroidDrawableCompat.wrap(drawable: navIconDrawable)
+        AndroidDrawableCompat.setTint(drawable: navIconDrawable, color: AndroidGraphicsColor.WHITE)
+        
+        navigationBar.androidToolbar.navigationIcon = navIconDrawable
+        
+        navigationBar.androidToolbar.setNavigationOnClickListener {
+            self.popViewController(animated: false)
         }
     }
 }
+
