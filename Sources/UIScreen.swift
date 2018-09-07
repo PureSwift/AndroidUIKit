@@ -9,48 +9,6 @@ import Foundation
 import Android
 import java_swift
 
-public final class AndroidUIKitMainActivity: SwiftSupportAppCompatActivity {
-    
-    public lazy var screen: UIScreen = UIScreen.mainScreen(for: self)
-    
-    public override func onCreate(savedInstanceState: Android.OS.Bundle?) {
-        
-        #if os(Android)
-        DispatchQueue.drainingMainQueue = true
-        #endif
-        
-        // load app
-        let app = UIApplication.shared
-        
-        // load screen
-        let _ = screen
-        
-        guard let delegate = app.delegate
-            else { assertionFailure("Missing UIApplicationDelegate"); return }
-        
-        // Tells the delegate that the launch process has begun but that state restoration has not yet occurred.
-        if delegate.application(app, willFinishLaunchingWithOptions: nil) == false {
-            
-            
-        }
-        
-        if delegate.application(app, didFinishLaunchingWithOptions: nil) == false {
-            
-            
-        }
-        
-        drainMainQueue()
-    }
-    
-    /// call from main thread in Java periodically
-    private func drainMainQueue() {
-        
-        #if os(Android)
-        CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.01, true)
-        #endif
-    }
-}
-
 public final class UIScreen {
     
     // MARK: - Initialization
@@ -68,7 +26,7 @@ public final class UIScreen {
         update()
     }
     
-    fileprivate static func mainScreen(for activity: SwiftSupport.App.AppCompatActivity) -> UIScreen  {
+    internal static func mainScreen(for activity: SwiftSupport.App.AppCompatActivity) -> UIScreen  {
         
         assert(_main == nil, "Main screen is already initialized")
         

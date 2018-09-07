@@ -17,12 +17,12 @@ public final class AndroidUIKitApplication: SwiftApplication {
         super.init(javaObject: javaObject)
         
         // store a singleton reference
-        assert(androidContext == nil, "Should only be initialized once")
-        androidContext = self
+        assert(_androidContext == nil, "Should only be initialized once")
+        _androidContext = self
     }
 }
 
-internal private(set) weak var androidContext: AndroidUIKitApplication!
+internal private(set) weak var _androidContext: AndroidUIKitApplication!
 
 internal let _UIApp = UIApplication()
 
@@ -35,16 +35,14 @@ public final class UIApplication: UIResponder {
     
     // MARK: - Android
     
-    public var android: AndroidUIKitApplication {
+    public var androidApplication: AndroidUIKitApplication {
         
-        return androidContext
+        return _androidContext
     }
     
-    public func requestPermissions(permissions: [String], requestCode: Int) {
+    public var androidActivity: AndroidUIKitMainActivity {
         
-        let context = AndroidContextWrapper(casting: android)!
-        
-        context.requestPermissions(permissions: permissions, requestCode: requestCode)
+        return _androidActivity
     }
     
     // MARK: - Getting the App Instance
@@ -153,7 +151,7 @@ public final class UIApplication: UIResponder {
 
 // MARK: - Supporting Types
 
-public protocol UIApplicationDelegate: class {
+public protocol UIApplicationDelegate: class, AndroidApplicationDelegate {
     
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]?) -> Bool
     
@@ -168,6 +166,39 @@ public protocol UIApplicationDelegate: class {
     func applicationWillEnterForeground(_ application: UIApplication)
     
     func applicationWillTerminate(_ application: UIApplication)
+}
+
+// Default implementations
+public extension UIApplicationDelegate {
+    
+    // Tells the delegate that the launch process has begun but that state restoration has not yet occurred.
+    func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]?) -> Bool { return true }
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]?) -> Bool { return true }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) { }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) { }
+    
+    func applicationWillResignActive(_ application: UIApplication) { }
+    
+    func applicationWillEnterForeground(_ application: UIApplication) { }
+    
+    func applicationWillTerminate(_ application: UIApplication) { }
+}
+
+public protocol AndroidApplicationDelegate: class {
+    
+    func application(_ application: UIApplication, requestPermissionsResult requestCode: Int, permissions: [String], grantResults: [Int])
+    
+    func application(_ application: UIApplication, activityResult requestCode: Int, resultCode: Int, data: Android.Content.Intent?)
+}
+
+public extension AndroidApplicationDelegate {
+    
+    func application(_ application: UIApplication, requestPermissionsResult requestCode: Int, permissions: [String], grantResults: [Int]) { }
+    
+    func application(_ application: UIApplication, activityResult requestCode: Int, resultCode: Int, data: Android.Content.Intent?) { }
 }
 
 public enum UIApplicationState: Int {
@@ -201,23 +232,4 @@ extension UIApplicationLaunchOptionsKey: Hashable {
         
         return rawValue.hashValue
     }
-}
-
-// Default implementations
-public extension UIApplicationDelegate {
-    
-    // Tells the delegate that the launch process has begun but that state restoration has not yet occurred.
-    func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]?) -> Bool { return true }
-    
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]?) -> Bool { return true }
-    
-    func applicationDidBecomeActive(_ application: UIApplication) { }
-    
-    func applicationDidEnterBackground(_ application: UIApplication) { }
-    
-    func applicationWillResignActive(_ application: UIApplication) { }
-    
-    func applicationWillEnterForeground(_ application: UIApplication) { }
-    
-    func applicationWillTerminate(_ application: UIApplication) { }
 }
