@@ -53,7 +53,7 @@ playground.xcworkspace
 # Add this line if you want to avoid checking in source code from Carthage dependencies.
 # Carthage/Checkouts
 
-Carthage/Build
+Carthage/*
 
 # fastlane
 #
@@ -68,3 +68,5 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 
 Sources/main.swift
+
+AndroidUIKit.xcodeproj/*
