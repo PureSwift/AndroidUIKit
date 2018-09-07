@@ -61,7 +61,20 @@ public final class AndroidUIKitMainActivity: SwiftSupportAppCompatActivity {
     public override func onPause() {
         
         let app = UIApplication.shared
-        app.delegate?.applicationWillResignActive(app)
+        
+        if isFinishing() {
+            
+            app.delegate?.applicationWillTerminate(app)
+            
+        } else {
+            
+            app.delegate?.applicationWillResignActive(app)
+        }
+    }
+    
+    public override func onStop() {
+        
+        let app = UIApplication.shared
         app.delegate?.applicationDidEnterBackground(app)
     }
     
