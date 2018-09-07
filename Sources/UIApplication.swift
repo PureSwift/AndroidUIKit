@@ -35,12 +35,16 @@ public final class UIApplication: UIResponder {
     
     // MARK: - Android
     
-    public var context: AndroidContext {
+    public var android: AndroidUIKitApplication {
         
-        guard let object = androidContext
-            else { fatalError("Android Application not initialized") }
+        return androidContext
+    }
+    
+    public func requestPermissions(permissions: [String], requestCode: Int) {
         
-        return AndroidContext(casting: object)!
+        let context = AndroidContextWrapper(casting: android)!
+        
+        context.requestPermissions(permissions: permissions, requestCode: requestCode)
     }
     
     // MARK: - Getting the App Instance

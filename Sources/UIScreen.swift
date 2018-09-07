@@ -15,6 +15,10 @@ public final class AndroidUIKitMainActivity: SwiftSupportAppCompatActivity {
     
     public override func onCreate(savedInstanceState: Android.OS.Bundle?) {
         
+        #if os(Android)
+        DispatchQueue.drainingMainQueue = true
+        #endif
+        
         // load app
         let app = UIApplication.shared
         
@@ -34,6 +38,16 @@ public final class AndroidUIKitMainActivity: SwiftSupportAppCompatActivity {
             
             
         }
+        
+        drainMainQueue()
+    }
+    
+    /// call from main thread in Java periodically
+    private func drainMainQueue() {
+        
+        #if os(Android)
+        CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.01, true)
+        #endif
     }
 }
 
