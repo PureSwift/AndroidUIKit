@@ -22,7 +22,7 @@ open class UITableViewController: UIViewController, UITableViewDataSource, UITab
     
     open override func loadView() {
         
-        let tableView = UITableView.init(frame: CGRect(x: 0, y: 0, width: 320, height: 480), style: style)
+        let tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 320, height: 480), style: style)
         tableView.dataSource = self
         tableView.delegate = self
         

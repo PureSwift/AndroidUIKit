@@ -119,6 +119,8 @@ final public class UITableView: UIView {
         
         self.adapter = adapter
         self.recyclerView?.adapter = adapter
+        
+        self.backgroundColor = .white
     }
     
     // MARK: - Methods
