@@ -16,23 +16,31 @@ public final class AndroidUIKitApplication: SwiftApplication {
     public required init(javaObject: jobject?) {
         super.init(javaObject: javaObject)
         
-        
-    }
-    
-    public override func onCreate() {
-        
-       
+        // store a singleton reference
+        assert(androidContext == nil, "Should only be initialized once")
+        androidContext = self
     }
 }
 
+internal private(set) weak var androidContext: AndroidUIKitApplication!
 
-internal private(set) var _UIApp = UIApplication()
+internal let _UIApp = UIApplication()
 
 public final class UIApplication: UIResponder {
     
     fileprivate override init() {
         
         super.init()
+    }
+    
+    // MARK: - Android
+    
+    public var context: AndroidContext {
+        
+        guard let object = androidContext
+            else { fatalError("Android Application not initialized") }
+        
+        return AndroidContext(casting: object)!
     }
     
     // MARK: - Getting the App Instance

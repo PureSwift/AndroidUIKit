@@ -1,5 +1,5 @@
 //
-//  UITableView.swift
+//  UITableViewController.swift
 //  AndroidUIKit
 //
 //  Created by Alsey Coleman Miller on 9/7/18.
@@ -43,7 +43,11 @@ open class UITableViewController: UIViewController, UITableViewDataSource, UITab
     
     open override var description: String {
         
-        return String(format: "<%@: %p; tableView = %@>", self.className, NSStringFromClass(type(of: self)), Unmanaged<UITableViewController>.passUnretained(self).toOpaque().debugDescription, self.tableView)
+        let className = NSStringFromClass(type(of: self))
+        let pointer = Unmanaged<UITableViewController>.passUnretained(self).toOpaque().debugDescription
+        let tableView = self.tableView.description
+        
+        return String("<\(className): \(pointer); tableView = \(tableView)>")
     }
     
     open func numberOfSections(in tableView: UITableView) -> Int {
