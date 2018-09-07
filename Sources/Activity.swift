@@ -8,6 +8,7 @@
 import Foundation
 import Android
 import java_swift
+import CoreFoundation
 
 public final class AndroidUIKitMainActivity: SwiftSupportAppCompatActivity {
     
