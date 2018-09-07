@@ -312,7 +312,7 @@ open class UIViewController: UIResponder {
     
     // Created on-demand so that a view controller may customize its navigation appearance.
     /// The navigation item used to represent the view controller in a parent's navigation bar.
-    public lazy var navigationItem: UINavigationItem = UINavigationItem(title: "")
+    public lazy var navigationItem: UINavigationItem = UINavigationItem(title: self.title ?? "")
     
     // If YES, then when this view controller is pushed into a controller hierarchy with a bottom bar (like a tab bar), the bottom bar will slide out. Default is NO.
     public var hidesBottomBarWhenPushed: Bool = false
