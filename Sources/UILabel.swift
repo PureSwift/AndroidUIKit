@@ -55,7 +55,7 @@ open class UILabel: UIView {
         
         androidTextView.setId(androidTextViewId)
         
-        let frameDp = CGRect.applyDP(rect: frame)
+        let frameDp = frame.applyingDP()
         
         // set origin
         androidTextView.setX(x: Float(frameDp.minX))

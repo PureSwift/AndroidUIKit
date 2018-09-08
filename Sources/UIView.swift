@@ -61,7 +61,7 @@ open class UIView: UIResponder {
         
         NSLog("\((type: self)) \(#function) \(Int(frame.width)) - \(Int(frame.height))")
         
-        let frameDp = CGRect.applyDP(rect: frame)
+        let frameDp = frame.applyingDP()
         
         // set origin
         androidView.setX(x: Float(frameDp.minX))

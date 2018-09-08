@@ -67,7 +67,7 @@ open class UINavigationBar: UIView {
     
     private func updateAndroidToolbarSize() {
         
-        let frameDp = CGRect.applyDP(rect: frame)
+        let frameDp = frame.applyingDP()
         
         // set origin
         androidToolbar.setX(x: Float(frameDp.minX))

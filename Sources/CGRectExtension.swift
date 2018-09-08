@@ -9,13 +9,13 @@ import Foundation
 
 internal extension CGRect {
     
-    static func applyDP(rect: CGRect, screen: UIScreen = UIScreen.main) -> CGRect {
+    func applyingDP(screen: UIScreen = UIScreen.main) -> CGRect {
         
-        let xDp = rect.minX * screen.scale
-        let yDp = rect.minY * screen.scale
-        let widthDp = rect.width * screen.scale
-        let heightDp = rect.height * screen.scale
+        let xDp = minX * screen.scale
+        let yDp = minY * screen.scale
+        let widthDp = width * screen.scale
+        let heightDp = height * screen.scale
         
-        return CGRect.init(x: xDp, y: yDp, width: widthDp, height: heightDp)
+        return CGRect(x: xDp, y: yDp, width: widthDp, height: heightDp)
     }
 }
