@@ -25,7 +25,7 @@ public final class AndroidUIKitMainActivity: SwiftSupportAppCompatActivity {
     public override func onCreate(savedInstanceState: Android.OS.Bundle?) {
         
         #if os(Android)
-        DispatchQueue.drainingMainQueue = true
+        //DispatchQueue.drainingMainQueue = true
         #endif
         
         // load app
@@ -64,7 +64,7 @@ public final class AndroidUIKitMainActivity: SwiftSupportAppCompatActivity {
         
         if isFinishing() {
             
-            app.delegate?.applicationWillTerminate(app)
+            //app.delegate?.applicationWillTerminate(app)
             
         } else {
             
@@ -76,12 +76,6 @@ public final class AndroidUIKitMainActivity: SwiftSupportAppCompatActivity {
         
         let app = UIApplication.shared
         app.delegate?.applicationDidEnterBackground(app)
-    }
-    
-    public override func onDestroy() {
-        
-        let app = UIApplication.shared
-        app.delegate?.applicationWillTerminate(app)
     }
     
     public override func onActivityResult(requestCode: Int, resultCode: Int, data: Android.Content.Intent?) {

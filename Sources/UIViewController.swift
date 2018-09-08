@@ -341,4 +341,17 @@ open class UIViewController: UIResponder {
         
         return nil
     }
+    
+    /// Presents a view controller in a primary context.
+    public func show(_ viewController: UIViewController, sender: Any?) {
+        
+        if let navigationController = self.navigationController {
+            
+            navigationController.pushViewController(viewController, animated: true)
+            
+        } else {
+            
+            // present VC modally
+        }
+    }
 }
