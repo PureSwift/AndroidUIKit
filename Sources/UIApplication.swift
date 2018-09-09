@@ -17,7 +17,6 @@ public final class AndroidUIKitApplication: SwiftApplication {
         super.init(javaObject: javaObject)
         
         // store a singleton reference
-        assert(_androidContext == nil, "Should only be initialized once")
         _androidContext = self
     }
 }

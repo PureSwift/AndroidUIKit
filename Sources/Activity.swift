@@ -18,7 +18,6 @@ public final class AndroidUIKitMainActivity: SwiftSupportAppCompatActivity {
         super.init(javaObject: javaObject)
         
         // store a singleton reference
-        assert(_androidActivity == nil, "Should only be initialized once")
         _androidActivity = self
     }
     
