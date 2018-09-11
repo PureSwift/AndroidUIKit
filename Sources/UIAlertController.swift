@@ -9,6 +9,8 @@ import Foundation
 import Android
 
 public class UIAlertController {
+
+    weak var presentingViewController: UIViewController?
     
     public var title: String?
     public var message: String?
@@ -81,7 +83,15 @@ public enum UIAlertActionStyle {
 
 public extension UIViewController {
     
+
+    public func dismiss(animated: Bool, completion: (() -> ())?){
+        
+        androidAlertDialog?.dismiss()
+        androidAlertDialog = nil
+    }
+    
     public func present(_ alertController: UIAlertController, animated: Bool, completion: (() -> ())? = nil){
+        alertController.presentingViewController = self
         
         let themeAlertDialogDefaultId = UIScreen.main.activity.getIdentifier(name: "AlertDialogTheme", type: "style")
         
@@ -121,6 +131,7 @@ public extension UIViewController {
             androidAlertDialogBuilder.setNegativeButton(text: cancelAlertAction.title ?? ""){ dialog, which in
                 cancelAlertAction.handler?(cancelAlertAction)
                 dialog?.dismiss()
+                self.androidAlertDialog = nil
             }
         }
         
@@ -130,6 +141,7 @@ public extension UIViewController {
             androidAlertDialogBuilder.setPositiveButton(text: alertAction.title ?? ""){ dialog, which in
                 alertAction.handler?(alertAction)
                 dialog?.dismiss()
+                self.androidAlertDialog = nil
             }
         }
         
@@ -139,10 +151,11 @@ public extension UIViewController {
             androidAlertDialogBuilder.setNeutralButton(text: alertAction.title ?? ""){ dialog, which in
                 alertAction.handler?(alertAction)
                 dialog?.dismiss()
+                self.androidAlertDialog = nil
             }
         }
         
-        androidAlertDialogBuilder.show()
+        self.androidAlertDialog = androidAlertDialogBuilder.show()
     }
     
     private func createCustomAlertDialog(_ alertController: UIAlertController, _ androidAlertDialogBuilder: AndroidAlertDialog.Builder){
@@ -212,7 +225,7 @@ public extension UIViewController {
         
         androidAlertDialogBuilder.setView(view: linearLayout)
         
-        let alertDialog = androidAlertDialogBuilder.show()
+        self.androidAlertDialog = androidAlertDialogBuilder.show()
         
         adapter.onClickBlock = { position in
             
@@ -220,7 +233,8 @@ public extension UIViewController {
             
             alertAction.handler?(alertAction)
             
-            alertDialog.dismiss()
+            self.androidAlertDialog?.dismiss()
+            self.androidAlertDialog = nil
         }
     }
 }

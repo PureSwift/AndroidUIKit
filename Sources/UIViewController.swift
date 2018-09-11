@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import Android
 /**
  View Controller
  
@@ -15,6 +15,8 @@ import Foundation
 open class UIViewController: UIResponder {
     
     // MARK: - Configuring a View Controller Using Nib Files
+    
+    internal var androidAlertDialog: AndroidAlertDialog?
     
     public init?(coder: NSCoder) {
         
