@@ -10,7 +10,7 @@ import Android
 
 public class UIAlertController {
 
-    weak var presentingViewController: UIViewController?
+    public weak var presentingViewController: UIViewController?
     
     public var title: String?
     public var message: String?
