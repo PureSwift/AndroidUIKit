@@ -65,6 +65,16 @@ open class UILabel: UIView {
         //self.isUserInteractionEnabled = false
         
         androidTextView.setId(androidTextViewId)
+        updateTextViewFrame()
+    }
+    
+    override func updateAndroidViewSize() {
+        super.updateAndroidViewSize()
+        
+        updateTextViewFrame()
+    }
+    
+    private func updateTextViewFrame() {
         
         let frameDp = frame.applyingDP()
         
@@ -74,6 +84,7 @@ open class UILabel: UIView {
         
         // set size
         androidTextView.layoutParams = AndroidViewGroupLayoutParams(width: Int(frameDp.width), height: Int(frameDp.height))
+        
     }
     
     private func getGravityFromNSTextAlignment(_ textAlignment: NSTextAlignment) -> Int {
@@ -125,4 +136,5 @@ public enum NSTextAlignment {
     /// and the default alignment for right-to-left scripts is NSTextAlignment.right.
     case natural
 }
+
 
