@@ -15,6 +15,52 @@ open class UITableViewController: UIViewController, UITableViewDataSource, UITab
     
     public var clearsSelectionOnViewWillAppear: Bool = true
     
+    var refreshControl: UIRefreshControl? {
+        
+        willSet {
+            
+            guard newValue == nil
+                else { return }
+            
+            guard let refreshControl = refreshControl
+                else { return }
+            
+            refreshControl.endRefreshing()
+            
+            let recyclerViewIndex = refreshControl.androidSwipeRefreshLayout.indexOfChild(child: tableView.recyclerView)
+            if(recyclerViewIndex >= 0){
+                
+                refreshControl.androidSwipeRefreshLayout.removeViewAt(index: recyclerViewIndex)
+            }
+            
+            let swipeRefreshLayoutIndex = tableView.androidView.indexOfChild(child: refreshControl.androidSwipeRefreshLayout)
+            if(swipeRefreshLayoutIndex >= 0){
+                
+                tableView.androidView.removeViewAt(index: swipeRefreshLayoutIndex)
+            }
+            
+            tableView.androidView.addView(tableView.recyclerView)
+        }
+        
+        didSet {
+            
+            guard let refreshControl = refreshControl
+                else { return }
+            
+            refreshControl.frame = tableView.frame
+            
+            tableView.androidView.addView(refreshControl.androidSwipeRefreshLayout)
+            
+            let recyclerViewIndex = tableView.androidView.indexOfChild(child: tableView.recyclerView)
+            
+            if(recyclerViewIndex >= 0){
+                tableView.androidView.removeViewAt(index: recyclerViewIndex)
+            }
+            
+            refreshControl.androidSwipeRefreshLayout.addView(tableView.recyclerView)
+        }
+    }
+    
     public var tableView: UITableView! {
         
         return self.view as? UITableView

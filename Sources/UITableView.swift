@@ -81,7 +81,7 @@ final public class UITableView: UIView {
     fileprivate var adapter: UITableViewRecyclerViewAdapter?
     
     // only assigned once
-    fileprivate var recyclerView: AndroidWidgetRecyclerView!
+    internal var recyclerView: AndroidWidgetRecyclerView!
     
     // MARK: - Initialization
     
