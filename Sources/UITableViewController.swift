@@ -15,7 +15,7 @@ open class UITableViewController: UIViewController, UITableViewDataSource, UITab
     
     public var clearsSelectionOnViewWillAppear: Bool = true
     
-    var refreshControl: UIRefreshControl? {
+    public var refreshControl: UIRefreshControl? {
         
         willSet {
             

@@ -17,7 +17,7 @@ open class UIControl {
     
     public var lastActionIdentifier: UInt = 0
     
-    func addTarget(action: @escaping () -> (), for event: UIControlEvent) {
+    public func addTarget(action: @escaping () -> (), for event: UIControlEvent) {
         
         let identifier = lastActionIdentifier + 1
         var actionsForEvent = _actions[event] ?? [:]
@@ -28,7 +28,7 @@ open class UIControl {
         targetAdded(action: action, for: event)
     }
     
-    func removeTarget(actionId: UInt, for event: UIControlEvent) {
+    public func removeTarget(actionId: UInt, for event: UIControlEvent) {
         
         guard var actionsForEvent = _actions[event]
             else { return }
