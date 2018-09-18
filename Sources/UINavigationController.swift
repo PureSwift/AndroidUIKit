@@ -44,7 +44,7 @@ open class UINavigationController: UIViewController {
      }
      */
     
-    fileprivate var _isNavigationBarHidden: Bool = false
+    fileprivate var _isNavigationBarHidden: Bool = true
     
     public lazy var toolbar = UIToolbar()
     

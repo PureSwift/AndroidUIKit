@@ -28,7 +28,7 @@ public final class UIScreen {
     
     internal static func mainScreen(for activity: SwiftSupport.App.AppCompatActivity) -> UIScreen  {
         
-        assert(_main == nil, "Main screen is already initialized")
+        //assert(_main == nil, "Main screen is already initialized")
         
         let screen = UIScreen(activity: activity)
         
