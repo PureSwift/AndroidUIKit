@@ -108,7 +108,12 @@ open class UIViewController: UIResponder {
     public final var viewIfLoaded: UIView? { return _view }
     
     /// A localized string that represents the view this controller manages.
-    public final var title: String?
+    public final var title: String? {
+        
+        didSet {
+            navigationItem.title = title
+        }
+    }
     
     /// The preferred size for the view controller’s view.
     ///

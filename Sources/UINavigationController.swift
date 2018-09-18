@@ -80,6 +80,7 @@ open class UINavigationController: UIViewController {
         //self.view.backgroundColor = UIColor.purple
         
         // setup
+        rootViewController.navigationItem.hidesBackButton = true
         self.navigationBar.delegate = self
         self.setViewControllers([rootViewController], animated: false)
     }
