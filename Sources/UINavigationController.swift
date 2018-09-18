@@ -44,7 +44,7 @@ open class UINavigationController: UIViewController {
      }
      */
     
-    fileprivate var _isNavigationBarHidden: Bool = true
+    fileprivate var _isNavigationBarHidden: Bool = false
     
     public lazy var toolbar = UIToolbar()
     
@@ -58,7 +58,7 @@ open class UINavigationController: UIViewController {
         }
     }
     
-    private var _isToolbarHidden: Bool = false
+    private var _isToolbarHidden: Bool = true
     
     /// The delegate of the navigation controller object.
     public weak var delegate: UINavigationControllerDelegate?
