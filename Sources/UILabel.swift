@@ -58,7 +58,7 @@ open class UILabel: UIView {
         }
     }
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         NSLog("\((type: self)) \(#function) ")
         // disable user interaction
@@ -66,6 +66,8 @@ open class UILabel: UIView {
         
         androidTextView.setId(androidTextViewId)
         updateTextViewFrame()
+        
+        androidView.addView(androidTextView)
     }
     
     override func updateAndroidViewSize() {

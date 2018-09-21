@@ -46,7 +46,7 @@ open class UITableViewCell: UIView {
         
         self.textLabel = UILabel(frame: frame)
         
-        androidView.addView(textLabel.androidTextView)
+        addSubview(self.textLabel)
     }
 }
 
