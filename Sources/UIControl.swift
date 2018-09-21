@@ -13,11 +13,11 @@ open class UIControl {
     
     public var isEnabled: Bool = true
     
-    public var _actions = [UIControlEvent : [UInt: () -> ()]]()
+    public var _actions = [UIControlEvents : [UInt: () -> ()]]()
     
     public var lastActionIdentifier: UInt = 0
     
-    public func addTarget(action: @escaping () -> (), for event: UIControlEvent) {
+    public func addTarget(action: @escaping () -> (), for event: UIControlEvents) {
         
         let identifier = lastActionIdentifier + 1
         var actionsForEvent = _actions[event] ?? [:]
@@ -28,7 +28,7 @@ open class UIControl {
         targetAdded(action: action, for: event)
     }
     
-    public func removeTarget(actionId: UInt, for event: UIControlEvent) {
+    public func removeTarget(actionId: UInt, for event: UIControlEvents) {
         
         guard var actionsForEvent = _actions[event]
             else { return }
@@ -45,9 +45,9 @@ open class UIControl {
         targetRemoved(for: event)
     }
     
-    open func targetAdded(action: @escaping () -> (), for event: UIControlEvent){}
+    open func targetAdded(action: @escaping () -> (), for event: UIControlEvents){}
     
-    open func targetRemoved(for event: UIControlEvent){}
+    open func targetRemoved(for event: UIControlEvents){}
 }
 
 /// Constants describing the state of a control.
@@ -79,7 +79,7 @@ public struct UIControlState: OptionSet {
     public static let application = UIControlState(rawValue: 0x00FF0000)
 }
 
-public struct UIControlEvent: OptionSet {
+public struct UIControlEvents: OptionSet {
     
     public let rawValue: Int
     
@@ -88,29 +88,29 @@ public struct UIControlEvent: OptionSet {
         self.rawValue = rawValue
     }
     
-    public static let touchDown = UIControlEvent(rawValue: 1 << 0)
-    public static let touchDownRepeat = UIControlEvent(rawValue: 1 << 1)
-    public static let touchDragInside = UIControlEvent(rawValue: 1 << 2)
-    public static let touchDragOutside = UIControlEvent(rawValue: 1 << 3)
-    public static let touchDragEnter = UIControlEvent(rawValue: 1 << 4)
-    public static let touchDragExit = UIControlEvent(rawValue: 1 << 5)
-    public static let touchUpInside = UIControlEvent(rawValue: 1 << 6)
-    public static let touchUpOutside = UIControlEvent(rawValue: 1 << 7)
-    public static let touchCancel = UIControlEvent(rawValue: 1 << 8)
-    public static let valueChanged = UIControlEvent(rawValue: 1 << 12)
-    public static let primaryActionTriggered = UIControlEvent(rawValue: 1 << 13)
-    public static let editingDidBegin = UIControlEvent(rawValue: 1 << 16)
-    public static let editingChanged = UIControlEvent(rawValue: 1 << 17)
-    public static let editingDidEnd = UIControlEvent(rawValue: 1 << 18)
-    public static let editingDidEndOnExit = UIControlEvent(rawValue: 1 << 19)
-    public static let allTouchEvents = UIControlEvent(rawValue: 0x00000FFF)
-    public static let allEditingEvents = UIControlEvent(rawValue: 0x000F0000)
-    public static let applicationReserved = UIControlEvent(rawValue: 0x0F000000)
-    //public static let systemReserved = UIControlEvent(rawValue: 0xF0000000)
-    //public static let allEvents = UIControlEvent(rawValue: 0xFFFFFFFF)
+    public static let touchDown = UIControlEvents(rawValue: 1 << 0)
+    public static let touchDownRepeat = UIControlEvents(rawValue: 1 << 1)
+    public static let touchDragInside = UIControlEvents(rawValue: 1 << 2)
+    public static let touchDragOutside = UIControlEvents(rawValue: 1 << 3)
+    public static let touchDragEnter = UIControlEvents(rawValue: 1 << 4)
+    public static let touchDragExit = UIControlEvents(rawValue: 1 << 5)
+    public static let touchUpInside = UIControlEvents(rawValue: 1 << 6)
+    public static let touchUpOutside = UIControlEvents(rawValue: 1 << 7)
+    public static let touchCancel = UIControlEvents(rawValue: 1 << 8)
+    public static let valueChanged = UIControlEvents(rawValue: 1 << 12)
+    public static let primaryActionTriggered = UIControlEvents(rawValue: 1 << 13)
+    public static let editingDidBegin = UIControlEvents(rawValue: 1 << 16)
+    public static let editingChanged = UIControlEvents(rawValue: 1 << 17)
+    public static let editingDidEnd = UIControlEvents(rawValue: 1 << 18)
+    public static let editingDidEndOnExit = UIControlEvents(rawValue: 1 << 19)
+    public static let allTouchEvents = UIControlEvents(rawValue: 0x00000FFF)
+    public static let allEditingEvents = UIControlEvents(rawValue: 0x000F0000)
+    public static let applicationReserved = UIControlEvents(rawValue: 0x0F000000)
+    //public static let systemReserved = UIControlEvents(rawValue: 0xF0000000)
+    //public static let allEvents = UIControlEvents(rawValue: 0xFFFFFFFF)
 }
 
-extension UIControlEvent: Hashable {
+extension UIControlEvents: Hashable {
     
     public var hashValue: Int {
         return rawValue

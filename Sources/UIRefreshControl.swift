@@ -60,14 +60,14 @@ open class UIRefreshControl: UIControl {
         androidSwipeRefreshLayout.layoutParams = AndroidFrameLayoutLayoutParams(width: widthDp, height: heightDp)
     }
     
-    open override func targetAdded(action: @escaping () -> (), for event: UIControlEvent) {
+    open override func targetAdded(action: @escaping () -> (), for event: UIControlEvents) {
         
         androidSwipeRefreshLayout.setOnRefreshListener {
             action()
         }
     }
     
-    open override func targetRemoved(for event: UIControlEvent) {
+    open override func targetRemoved(for event: UIControlEvents) {
         
         androidSwipeRefreshLayout.setOnRefreshListener(listener: nil)
     }
