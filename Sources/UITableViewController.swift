@@ -75,6 +75,11 @@ open class UITableViewController: UIViewController, UITableViewDataSource, UITab
         self.view = tableView
     }
     
+    open override func viewDidLayoutSubviews() {
+        
+        refreshControl?.frame = view.bounds
+    }
+    
     public init(style: UITableViewStyle) {
         
         super.init(nibName: nil, bundle: nil)
