@@ -24,7 +24,7 @@ open class UITableViewCell: UIView {
     
     public private(set) var textLabel: UILabel!
     
-    internal lazy var viewHolder: UITableViewCellViewHolder = UITableViewCellViewHolder(cell: self)
+    public lazy var viewHolder: UITableViewCellViewHolder = UITableViewCellViewHolder(cell: self)
     
     // MARK: - Private
     
@@ -50,10 +50,10 @@ open class UITableViewCell: UIView {
     }
 }
 
-internal class UITableViewCellViewHolder: AndroidWidgetRecyclerViewViewHolder {
+open class UITableViewCellViewHolder: AndroidWidgetRecyclerViewViewHolder {
     
     /// Reference to cell (used for configuration)
-    internal private(set) weak var cell: UITableViewCell?
+    public weak var cell: UITableViewCell?
     
     fileprivate convenience init(cell: UITableViewCell) {
         
@@ -63,7 +63,7 @@ internal class UITableViewCellViewHolder: AndroidWidgetRecyclerViewViewHolder {
         self.cell = cell
     }
     
-    required init(javaObject: jobject?) {
+    public required init(javaObject: jobject?) {
         super.init(javaObject: javaObject)
     }
     
@@ -102,3 +102,4 @@ public enum UITableViewCellEditingStyle: Int {
     case delete
     case insert
 }
+
