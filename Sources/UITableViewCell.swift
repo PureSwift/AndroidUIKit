@@ -24,6 +24,8 @@ open class UITableViewCell: UIView {
     
     public private(set) var textLabel: UILabel!
     
+    public private(set) var layoutName: String?
+    
     public lazy var viewHolder: UITableViewCellViewHolder = UITableViewCellViewHolder(cell: self)
     
     // MARK: - Private
@@ -47,6 +49,28 @@ open class UITableViewCell: UIView {
         self.textLabel = UILabel(frame: frame)
         
         addSubview(self.textLabel)
+    }
+    
+    public func inflateAndroidLayout(layoutName: String) {
+        
+        self.layoutName = layoutName
+        
+        androidView.removeAllViews()
+        
+        androidView.layoutParams = AndroidFrameLayoutLayoutParams.init(width: AndroidFrameLayoutLayoutParams.WRAP_CONTENT, height: AndroidFrameLayoutLayoutParams.WRAP_CONTENT)
+        
+        let peripheralViewLayoutId = UIApplication.shared.androidActivity.getIdentifier(name: layoutName, type: "layout")
+        
+        let layoutInflarer = Android.View.LayoutInflater.from(context: UIApplication.shared.androidActivity)
+        
+        let itemView = layoutInflarer.inflate(resource: Android.R.Layout(rawValue: peripheralViewLayoutId), root: nil, attachToRoot: false)
+        
+        androidView.addView(itemView)
+    }
+    
+    public func getItemView() -> AndroidView {
+        
+        return androidView
     }
 }
 
@@ -102,4 +126,5 @@ public enum UITableViewCellEditingStyle: Int {
     case delete
     case insert
 }
+
 
