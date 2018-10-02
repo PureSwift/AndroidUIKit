@@ -39,22 +39,31 @@ open class UIView: UIResponder {
         //self.updateAndroidView()
     }
     
+    public convenience init(androidViewChild: AndroidView){
+        
+        self.init(frame: .zero)
+        
+        self.androidView.addView(androidViewChild)
+    }
+    
     // MARK: - CustomStringConvertible
     /*
      open override var description: String {
      
-        return String(format: "<%@: %p; frame = %@; hidden = %@; layer = %@>", NSStringFromClass(type(of: self)), Unmanaged<UIView>.passUnretained(self).toOpaque().debugDescription, "\(frame)", (isHidden ? "YES" : "NO"), "\(androidView.javaObject!)")
+     return String(format: "<%@: %p; frame = %@; hidden = %@; layer = %@>", NSStringFromClass(type(of: self)), Unmanaged<UIView>.passUnretained(self).toOpaque().debugDescription, "\(frame)", (isHidden ? "YES" : "NO"), "\(androidView.javaObject!)")
      }
-    */
+     */
     // MARK: - Properties
     
     /// The backing Android View
-    internal lazy private(set) var androidView: Android.Widget.FrameLayout = { [unowned self] in
+    public lazy private(set) var androidView: Android.Widget.FrameLayout = { [unowned self] in
         
         guard let context = AndroidContext(casting: UIScreen.main.activity)
             else { fatalError("Missing context") }
         
-        return Android.Widget.FrameLayout(context: context)
+        let frameLayout = Android.Widget.FrameLayout(context: context)
+        
+        return frameLayout
         }()
     
     internal func updateAndroidViewSize() {
@@ -80,8 +89,8 @@ open class UIView: UIResponder {
     ///
     /// The default value is `nil`, which results in a transparent background color.
     public final var backgroundColor: UIColor? { didSet {
-            /*setNeedsDisplay()*/
-            androidView.background = backgroundColor?.androidColor
+        /*setNeedsDisplay()*/
+        androidView.background = backgroundColor?.androidColor
         }
     }
     
@@ -385,7 +394,7 @@ open class UIView: UIResponder {
     
     @inline(__always)
     private func addSubview(_ view: UIView, _ body: (inout [UIView], UIView) -> ()) {
-
+        
         NSLog("addSubview")
         NSLog("\((type: self)) \(#function) \(Int(frame.width)) - \(Int(frame.height))")
         
@@ -463,13 +472,13 @@ open class UIView: UIResponder {
         
         assert(subviews.contains(where: { $0 === view }), "\(view) is not a subview of \(self)")
         /*
-        guard let index = subviews.index(where: { $0 === view })
-            else { return }
-        
-        subviews.remove(at: index)
-        
-        subviews.append(view)
-        */
+         guard let index = subviews.index(where: { $0 === view })
+         else { return }
+         
+         subviews.remove(at: index)
+         
+         subviews.append(view)
+         */
         //androidView.bringToFront()
         androidView.bringChildToFront(child: view.androidView)
     }
@@ -884,49 +893,49 @@ open class UIView: UIResponder {
     
     // MARK: - Managing Gesture Recognizers
     /*
-    /// Attaches a gesture recognizer to the view.
-    public func addGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer) {
-        
-        addGestureRecognizer(gestureRecognizer, atEnd: true)
-    }
-    
-    private func addGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, atEnd: Bool) {
-        
-        // remove from old view
-        gestureRecognizer.view?.removeGestureRecognizer(gestureRecognizer)
-        
-        // add to view
-        gestureRecognizer.view = self
-        atEnd ? gestureRecognizers?.append(gestureRecognizer) : gestureRecognizers?.insert(gestureRecognizer, at: 0)
-        
-        // update gesture environment
-        //UIApplication.shared.gestureEnvironment.addGestureRecognizer(gestureRecognizer)
-    }
-    
-    /// Detaches a gesture recognizer from the receiving view.
-    public func removeGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer) {
-        
-        guard let index = gestureRecognizers?.index(where: { $0 === gestureRecognizer })
-            else { return }
-        
-        gestureRecognizers?.remove(at: index)
-        gestureRecognizer.view = nil
-    }
-    
-    private func removeAllGestureRecognizers() {
-        
-        gestureRecognizers?.forEach { removeGestureRecognizer($0) }
-    }
-    
-    /// The gesture-recognizer objects currently attached to the view.
-    public var gestureRecognizers: [UIGestureRecognizer]? = []
-    
-    /// Asks the view if the gesture recognizer should be allowed to continue tracking touch events.
-    open func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        
-        return true
-    }
-    */
+     /// Attaches a gesture recognizer to the view.
+     public func addGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer) {
+     
+     addGestureRecognizer(gestureRecognizer, atEnd: true)
+     }
+     
+     private func addGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, atEnd: Bool) {
+     
+     // remove from old view
+     gestureRecognizer.view?.removeGestureRecognizer(gestureRecognizer)
+     
+     // add to view
+     gestureRecognizer.view = self
+     atEnd ? gestureRecognizers?.append(gestureRecognizer) : gestureRecognizers?.insert(gestureRecognizer, at: 0)
+     
+     // update gesture environment
+     //UIApplication.shared.gestureEnvironment.addGestureRecognizer(gestureRecognizer)
+     }
+     
+     /// Detaches a gesture recognizer from the receiving view.
+     public func removeGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer) {
+     
+     guard let index = gestureRecognizers?.index(where: { $0 === gestureRecognizer })
+     else { return }
+     
+     gestureRecognizers?.remove(at: index)
+     gestureRecognizer.view = nil
+     }
+     
+     private func removeAllGestureRecognizers() {
+     
+     gestureRecognizers?.forEach { removeGestureRecognizer($0) }
+     }
+     
+     /// The gesture-recognizer objects currently attached to the view.
+     public var gestureRecognizers: [UIGestureRecognizer]? = []
+     
+     /// Asks the view if the gesture recognizer should be allowed to continue tracking touch events.
+     open func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+     
+     return true
+     }
+     */
     // MARK: - Event Handling
     
     // MARK: - UIResponder
@@ -956,3 +965,4 @@ open class UIView: UIResponder {
 // MARK: - Supporting Types
 
 public let UIViewNoIntrinsicMetric: CGFloat = -1.0
+

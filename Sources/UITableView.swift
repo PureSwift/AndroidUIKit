@@ -218,6 +218,8 @@ public extension UITableViewDataSource {
 
 internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter {
     
+    internal let headerIndex = -1
+    
     internal private(set) weak var tableView: UITableView?
     
     /// Cells ready for reuse
@@ -227,6 +229,8 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
     internal private(set) var cells = Set<UITableViewCell>()
     
     internal private(set) var visibleCells = [IndexPath: UITableViewCell]()
+    
+    internal private(set) var indexPaths = [Int: IndexPath]()
     
     convenience init(tableView: UITableView) {
         self.init(javaObject: nil)
@@ -260,8 +264,8 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
             guard let delegate = tableView.delegate
                 else { assertionFailure("Missing delegate"); return }
             
-            // FIXME: Convert position to indexPath, support multiple sections
-            let indexPath = IndexPath(row: cell.viewHolder.adapterPosition, in: 0)
+            guard let indexPath = self.indexPaths[cell.viewHolder.adapterPosition]
+                else { assertionFailure("Missing indexpath"); return  }
             
             delegate.tableView(tableView, didSelectRowAt: indexPath)
         }
@@ -285,20 +289,34 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
         guard let dataSource = tableView.dataSource
             else { assertionFailure("Missing data source"); return }
         
+        guard let delegate = tableView.delegate
+            else { assertionFailure("Missing delegate"); return }
+        
         guard let cell = viewHolder.cell
             else { assertionFailure("Missing cell"); return }
         
         // FIXME: Convert position to indexPath, support multiple sections
-        let indexPath = IndexPath(row: position, in: 0)
+        
+        guard let indexPath = indexPaths[position]
+            else { assertionFailure("Missing IndexPath in the postion: \(position)"); return }
         
         // add cell to reusable queue
         self.reusableCells[indexPath] = cell
         
-        // data source should use `dequeueCell` to get an existing cell
-        let returnedCell = dataSource.tableView(tableView, cellForRowAt: indexPath)
-        
-        // should not create new cells constantly
-        assert(returnedCell === cell)
+        if indexPath.row == headerIndex {
+            
+            if let headerView = delegate.tableView(tableView, viewForHeaderInSection: indexPath.section)?.androidView {
+                
+                cell.addCHildView(view: headerView)
+            }
+        } else {
+            
+            // data source should use `dequeueCell` to get an existing cell
+            let returnedCell = dataSource.tableView(tableView, cellForRowAt: indexPath)
+            
+            // should not create new cells constantly
+            assert(returnedCell === cell)
+        }
         
         // not reusable anymore
         self.reusableCells[indexPath] = nil
@@ -319,7 +337,23 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
             return 0
         }
         
-        return dataSource.tableView(tableView, numberOfRowsInSection: dataSource.numberOfSections(in: tableView))
+        var count = 0
+        
+        let sections = dataSource.numberOfSections(in: tableView)
+        
+        for section in 0..<sections {
+            
+            indexPaths[count] = IndexPath(row: headerIndex, in: section)
+            count = count + 1
+            
+            for row in 0..<dataSource.tableView(tableView, numberOfRowsInSection: section){
+                
+                indexPaths[count] = IndexPath(row: row, in: section)
+                count = count + 1
+            }
+        }
+        
+        return count
     }
 }
 
@@ -513,4 +547,3 @@ public extension UITableViewDelegate {
         return proposedDestinationIndexPath
     }
 }
-

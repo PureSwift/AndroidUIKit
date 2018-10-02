@@ -67,6 +67,16 @@ open class UITableViewCell: UIView {
         
         androidView.addView(itemView)
     }
+    public func addCHildView(view: AndroidView){
+        
+        self.layoutName = nil
+        
+        androidView.removeAllViews()
+        
+        androidView.layoutParams = view.layoutParams
+        
+        androidView.addView(view)
+    }
     
     public func getItemView() -> AndroidView {
         
@@ -126,5 +136,6 @@ public enum UITableViewCellEditingStyle: Int {
     case delete
     case insert
 }
+
 
 
