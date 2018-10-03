@@ -341,15 +341,25 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
         
         let sections = dataSource.numberOfSections(in: tableView)
         
-        for section in 0..<sections {
+        if(sections == 1) {
             
-            indexPaths[count] = IndexPath(row: headerIndex, in: section)
-            count = count + 1
-            
-            for row in 0..<dataSource.tableView(tableView, numberOfRowsInSection: section){
+            for row in 0..<dataSource.tableView(tableView, numberOfRowsInSection: 0){
                 
-                indexPaths[count] = IndexPath(row: row, in: section)
+                indexPaths[count] = IndexPath(row: row, in: 0)
                 count = count + 1
+            }
+        } else {
+            
+            for section in 0..<sections {
+                
+                indexPaths[count] = IndexPath(row: headerIndex, in: section)
+                count = count + 1
+                
+                for row in 0..<dataSource.tableView(tableView, numberOfRowsInSection: section){
+                    
+                    indexPaths[count] = IndexPath(row: row, in: section)
+                    count = count + 1
+                }
             }
         }
         
