@@ -9,7 +9,7 @@ import Foundation
 import Android
 
 public class UIAlertController {
-
+    
     public weak var presentingViewController: UIViewController?
     
     public var title: String?
@@ -18,6 +18,8 @@ public class UIAlertController {
     
     /// The actions that the user can take in response to the alert or action sheet.
     public var actions = [UIAlertAction]()
+    
+    public var textFields = [UITextField]()
     
     /// The preferred action for the user to take from an alert.
     var preferredAction: UIAlertAction?
@@ -32,6 +34,12 @@ public class UIAlertController {
     /// Attaches an action object to the alert or action sheet.
     public func addAction(_ action: UIAlertAction){
         actions.append(action)
+    }
+    
+    public func addTextField(configurationHandler: ((UITextField) -> Void)? = nil){
+        let newTextField = UITextField.init()
+        configurationHandler?(newTextField)
+        textFields.append(newTextField)
     }
 }
 
@@ -83,7 +91,7 @@ public enum UIAlertActionStyle {
 
 public extension UIViewController {
     
-
+    
     public func dismiss(animated: Bool, completion: (() -> ())?){
         
         androidAlertDialog?.dismiss()
@@ -93,9 +101,9 @@ public extension UIViewController {
     public func present(_ alertController: UIAlertController, animated: Bool, completion: (() -> ())? = nil){
         alertController.presentingViewController = self
         
-        let themeAlertDialogDefaultId = UIScreen.main.activity.getIdentifier(name: "AlertDialogTheme", type: "style")
+        //let themeAlertDialogDefaultId = UIScreen.main.activity.getIdentifier(name: "AlertDialogTheme", type: "style")
         
-        let androidAlertDialogBuilder = AndroidAlertDialog.Builder(context: UIScreen.main.activity, themeResId: themeAlertDialogDefaultId)
+        let androidAlertDialogBuilder = AndroidAlertDialog.Builder(context: UIScreen.main.activity)
         androidAlertDialogBuilder.setCancelable(cancelable: false)
         
         if(alertController.title != nil){
@@ -110,10 +118,6 @@ public extension UIViewController {
     }
     
     private func createNormalAlertDialog(_ alertController: UIAlertController, _ androidAlertDialogBuilder: AndroidAlertDialog.Builder){
-        
-        if(alertController.message != nil){
-            androidAlertDialogBuilder.setMessage(message: alertController.message!)
-        }
         
         let alertActions = alertController.actions.filter { alertAction in
             return alertAction.style != .cancel
@@ -155,7 +159,53 @@ public extension UIViewController {
             }
         }
         
+        if alertController.textFields.count > 0 {
+            
+            androidAlertDialogBuilder.setView(view: inflateTextFields(alertController))
+        } else {
+            
+            if(alertController.message != nil){
+                androidAlertDialogBuilder.setMessage(message: alertController.message!)
+            }
+        }
+        
         self.androidAlertDialog = androidAlertDialogBuilder.show()
+    }
+    
+    private func inflateTextFields(_ alertController: UIAlertController) -> AndroidView {
+        
+        let density = UIScreen.main.activity.getDensity()
+        
+        let dp3 = Int(3 * density)
+        let dp24 = Int(24 * density)
+        let dp12 = Int(12 * density)
+        let dp6 = Int(6 * density)
+        
+        let llParams = AndroidLinearLayoutLayoutParams(width: AndroidLinearLayoutLayoutParams.MATCH_PARENT, height: AndroidLinearLayoutLayoutParams.WRAP_CONTENT)
+        
+        let linearLayout = AndroidLinearLayout.init(context: UIScreen.main.activity)
+        linearLayout.layoutParams = llParams
+        linearLayout.setPadding(left: dp24, top: dp3, right: dp24, bottom: dp3)
+        linearLayout.orientation = AndroidLinearLayout.VERTICAL
+        
+        if(alertController.message != nil && (alertController.message?.count)! > 0){
+            
+            let textViewMessage = AndroidTextView.init(context: UIScreen.main.activity)
+            textViewMessage.layoutParams = AndroidViewGroupLayoutParams.init(width: AndroidViewGroupLayoutParams.MATCH_PARENT, height: AndroidViewGroupLayoutParams.WRAP_CONTENT)
+            textViewMessage.setPadding(left: 0, top: dp12, right: 0, bottom: dp6)
+            textViewMessage.setTextSize(size: 16.0)
+            textViewMessage.color = AndroidGraphicsColor.BLACK
+            
+            textViewMessage.text = alertController.message
+            linearLayout.addView(textViewMessage)
+        }
+        
+        alertController.textFields.forEach { uITextField in
+            
+            linearLayout.addView(uITextField.androidEditText)
+        }
+        
+        return linearLayout
     }
     
     private func createCustomAlertDialog(_ alertController: UIAlertController, _ androidAlertDialogBuilder: AndroidAlertDialog.Builder){
@@ -185,13 +235,13 @@ public extension UIViewController {
         let tvPaddingRight = Int(24 * density)
         let tvPaddingBottom = Int(6 * density)
         
-        let textViewMessage = AndroidTextView.init(context: UIScreen.main.activity)
-        textViewMessage.layoutParams = AndroidViewGroupLayoutParams.init(width: AndroidViewGroupLayoutParams.MATCH_PARENT, height: AndroidViewGroupLayoutParams.WRAP_CONTENT)
-        textViewMessage.setPadding(left: tvPaddingLeft, top: tvPaddingTop, right: tvPaddingRight, bottom: tvPaddingBottom)
-        textViewMessage.setTextSize(size: 16.0)
-        textViewMessage.color = AndroidGraphicsColor.BLACK
-        
         if(alertController.message != nil && (alertController.message?.count)! > 0){
+            
+            let textViewMessage = AndroidTextView.init(context: UIScreen.main.activity)
+            textViewMessage.layoutParams = AndroidViewGroupLayoutParams.init(width: AndroidViewGroupLayoutParams.MATCH_PARENT, height: AndroidViewGroupLayoutParams.WRAP_CONTENT)
+            textViewMessage.setPadding(left: tvPaddingLeft, top: tvPaddingTop, right: tvPaddingRight, bottom: tvPaddingBottom)
+            textViewMessage.setTextSize(size: 16.0)
+            textViewMessage.color = AndroidGraphicsColor.BLACK
             
             textViewMessage.text = alertController.message
             linearLayout.addView(textViewMessage)
@@ -238,3 +288,4 @@ public extension UIViewController {
         }
     }
 }
+

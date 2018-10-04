@@ -41,9 +41,9 @@ open class UINavigationBar: UIView {
         
         let toolbar = AndroidToolbar.init(context: UIScreen.main.activity)
         
-        toolbar.context?.setTheme(resId: UIScreen.main.activity.getIdentifier(name: "Dark_ActionBar", type: "style"))
+        //FIXME: toolbar.context?.setTheme(resId: UIScreen.main.activity.getIdentifier(name: "ToolBarStyle", type: "style"))
         toolbar.popupTheme = UIScreen.main.activity.getIdentifier(name: "Light", type: "style")
-
+        
         toolbar.title = "AndroidUIKit"
         
         // default background color
@@ -51,9 +51,7 @@ open class UINavigationBar: UIView {
         toolbar.setBackgroundColor(color: AndroidContextCompat.getColor(context: UIScreen.main.activity, colorRes: colorPrimaryId))
         
         return toolbar
-    }()
-    
-    
+        }()
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -216,3 +214,4 @@ private extension UINavigationBar {
         case pop
     }
 }
+
