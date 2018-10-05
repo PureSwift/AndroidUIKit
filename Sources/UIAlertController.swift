@@ -19,7 +19,7 @@ public class UIAlertController {
     /// The actions that the user can take in response to the alert or action sheet.
     public var actions = [UIAlertAction]()
     
-    public var textFields = [UITextField]()
+    public var textFields: [UITextField]?
     
     /// The preferred action for the user to take from an alert.
     var preferredAction: UIAlertAction?
@@ -37,9 +37,14 @@ public class UIAlertController {
     }
     
     public func addTextField(configurationHandler: ((UITextField) -> Void)? = nil){
+        
+        if textFields == nil {
+            textFields = [UITextField]()
+        }
+        
         let newTextField = UITextField.init()
         configurationHandler?(newTextField)
-        textFields.append(newTextField)
+        textFields?.append(newTextField)
     }
 }
 
@@ -159,7 +164,13 @@ public extension UIViewController {
             }
         }
         
-        if alertController.textFields.count > 0 {
+        guard let textFields = alertController.textFields else {
+            
+            self.androidAlertDialog = androidAlertDialogBuilder.show()
+            return
+        }
+        
+        if textFields.count > 0 {
             
             androidAlertDialogBuilder.setView(view: inflateTextFields(alertController))
         } else {
@@ -200,7 +211,12 @@ public extension UIViewController {
             linearLayout.addView(textViewMessage)
         }
         
-        alertController.textFields.forEach { uITextField in
+        guard let textFields = alertController.textFields else {
+            
+            return linearLayout
+        }
+        
+        textFields.forEach { uITextField in
             
             linearLayout.addView(uITextField.androidEditText)
         }
@@ -288,4 +304,5 @@ public extension UIViewController {
         }
     }
 }
+
 

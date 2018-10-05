@@ -37,7 +37,7 @@ open class UITextField {
         }
     }
     
-    public var placeHolder: String? {
+    public var placeholder: String? {
         
         get {
             return self.androidEditText.hint
@@ -48,3 +48,4 @@ open class UITextField {
         }
     }
 }
+
