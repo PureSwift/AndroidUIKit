@@ -30,6 +30,13 @@ open class UIToolbar: UIView {
         return bottomNavView
         }()
     
+    
+    public convenience init() {
+        self.init(frame: .zero)
+        
+        androidView.addView(androidBottomNavView)
+    }
+    
     public weak var delegate: UIToolbarDelegate?
     
     /// The items displayed on the toolbar.

@@ -55,6 +55,7 @@ open class UINavigationController: UIViewController {
         set {
             toolbar.isHidden = newValue
             _isToolbarHidden = newValue
+            NSLog("_isToolbarHiddenSet = \(newValue)")
         }
     }
     
@@ -105,7 +106,7 @@ open class UINavigationController: UIViewController {
         navigationBar.frame = navigationBarRect
         navigationBar.backgroundColor = .blue
         toolbar.frame = toolbarRect
-        toolbar.backgroundColor = .purple
+        
         visibleViewControllerView.frame = contentRect
         
         // set resizing
@@ -131,7 +132,7 @@ open class UINavigationController: UIViewController {
         let androidActionBarHeight = CGFloat.applyDP(pixels: UIScreen.main.activity.actionBarHeighPixels)
         let androidBottomNavigationBarHeight = CGFloat(56)
         
-        NSLog("actionBarHeigh dp \(androidActionBarHeight)")
+        NSLog("\(type(of: self)) \(#function) actionBarHeigh dp \(androidActionBarHeight)")
         
         let navigationBarRect = CGRect(x: bounds.minX,
                                        y: bounds.minY,
@@ -143,8 +144,8 @@ open class UINavigationController: UIViewController {
                                  width: bounds.width,
                                  height: androidBottomNavigationBarHeight)
         
-        NSLog("\(_isNavigationBarHidden)")
-        NSLog("\(isToolbarHidden)")
+        NSLog("\(type(of: self)) \(#function): _isNavigationBarHidden = \(_isNavigationBarHidden)")
+        NSLog("\(type(of: self)) \(#function): isToolbarHidden = \(isToolbarHidden)")
         if !_isNavigationBarHidden {
             
             contentRect.origin.y += navigationBarRect.height
@@ -179,18 +180,18 @@ open class UINavigationController: UIViewController {
         navigationBar.frame = navigationBarRect
         toolbar.frame = toolbarRect
         newVisibleViewController.view.frame = contentRect
-        print("newVisibleViewController type: \(type(of: newVisibleViewController))")
+        print("\(type(of: self)) \(#function) newVisibleViewController type: \(type(of: newVisibleViewController))")
         //NSLog("navigationview height \(self.)")
         
-        NSLog("navigationBarRect height \(navigationBarRect.height)")
-        NSLog("contentRect height \(contentRect.height)")
-        NSLog("toolbarRect height \(toolbarRect.height)")
-        NSLog("viewchild = contentRect height \(newVisibleViewController.view.frame.height)")
+        NSLog("\(type(of: self)) \(#function) navigationBar Rect height \(navigationBarRect.height)")
+        NSLog("\(type(of: self)) \(#function) content Rect height \(contentRect.height)")
+        NSLog("\(type(of: self)) \(#function) toolbar Rect height \(toolbarRect.height)")
+        NSLog("\(type(of: self)) \(#function) viewchild = contentRect height \(newVisibleViewController.view.frame.height)")
         
         newVisibleViewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.view.insertSubview(newVisibleViewController.view, at: 0)
         
-        NSLog("view controller child height \(newVisibleViewController.view.frame.height)")
+        NSLog("\(type(of: self)) \(#function) view controller child height \(newVisibleViewController.view.frame.height)")
         
         // FIXME: Animate
         
@@ -404,4 +405,3 @@ extension UINavigationController: UINavigationBarDelegate {
         }
     }
 }
-
