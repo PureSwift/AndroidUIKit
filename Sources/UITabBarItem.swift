@@ -24,6 +24,8 @@ open class UITabBarItem: UIBarItem {
     
     public var badgeColor: UIColor?
     
+    internal var position: Int = -1
+    
     public override init() {
         super.init()
     }
@@ -43,6 +45,7 @@ open class UITabBarItem: UIBarItem {
         self.title = title
         self.image = image
         self.tag = tag
+        self.position = tag
     }
     
     /// Creates and returns a new item with the specified title, unselected image, and selected image.
