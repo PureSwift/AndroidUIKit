@@ -16,6 +16,8 @@ import Android
  */
 open class UITabBarItem: UIBarItem {
     
+    internal var androidId: Int!
+    
     public var selectedImage: UIImage?
     
     public var titlePositionAdjustment = UIOffset.zero
@@ -28,6 +30,8 @@ open class UITabBarItem: UIBarItem {
     
     public override init() {
         super.init()
+        
+        androidId = AndroidViewCompat.generateViewId()
     }
     
     public convenience init(tabBarSystemItem: UITabBarItem.SystemItem, tag: Int) {

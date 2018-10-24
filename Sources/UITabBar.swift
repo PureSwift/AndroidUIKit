@@ -18,10 +18,25 @@ open class UITabBar: UIView {
         tabLayout.layoutParams = AndroidFrameLayoutLayoutParams.init(width: AndroidFrameLayoutLayoutParams.MATCH_PARENT, height: AndroidFrameLayoutLayoutParams.WRAP_CONTENT)
         
         return tabLayout
-    }()
+        }()
     
-    public init() {
-        super.init(frame: .zero)
+    public override init(frame: CGRect = .zero) {
+        super.init(frame: frame)
+        
+        self.androidView.addView(androidTabLayout)
+    }
+    
+    override func updateAndroidViewSize() {
+        
+        let frameDp = bounds.applyingDP()
+        
+        // set origin
+        self.androidView.setX(x: Float(frameDp.minX))
+        self.androidView.setY(y: Float(frameDp.minY))
+        NSLog("\(type(of: self)) \(#function) width:\(frameDp.width)  ")
+        // set size
+        self.androidView.layoutParams = Android.Widget.FrameLayout.FLayoutParams(width: Int(frameDp.width), height: Int(frameDp.height))
+        androidTabLayout.layoutParams = AndroidFrameLayoutLayoutParams.init(width: AndroidFrameLayoutLayoutParams.MATCH_PARENT, height: AndroidFrameLayoutLayoutParams.WRAP_CONTENT)
     }
     
     /// The tab bar’s delegate object.
@@ -39,7 +54,8 @@ open class UITabBar: UIView {
         
         let action: (AndroidTab) -> () = { androidTab in
             
-            let _uiTabBarItem = self.cache[androidTab]
+            let androidId =  java_lang.Integer(casting: androidTab.tag!)
+            let _uiTabBarItem = self.cache[(androidId?.intValue())!]
             
             guard let uiTabBarItem = _uiTabBarItem
                 else { return }
@@ -59,9 +75,9 @@ open class UITabBar: UIView {
         set { return setItems(newValue, animated: false) }
     }
     
-    public var _items = [UITabBarItem]()
+    private var _items = [UITabBarItem]()
     
-    private var cache = [AndroidTab: UITabBarItem]()
+    private var cache = [Int: UITabBarItem]()
     
     /// Sets the items on the tab bar, optionally animating any changes into position.
     public func setItems(_ uiTabBarItem: [UITabBarItem]?, animated: Bool) {
@@ -83,6 +99,7 @@ open class UITabBar: UIView {
         self._items.forEach{ uiTabBarItem in
             
             let tab = self.androidTabLayout.newTab()
+            tab.tag = java_lang.Integer(uiTabBarItem.androidId)
             
             if let title = uiTabBarItem.title {
                 
@@ -102,7 +119,7 @@ open class UITabBar: UIView {
                 self.androidTabLayout.addTab(tab, position: uiTabBarItem.position)
             }
             
-            cache[tab] = uiTabBarItem
+            cache[uiTabBarItem.androidId] = uiTabBarItem
         }
     }
     
@@ -194,27 +211,4 @@ fileprivate extension UITabBar {
             self.action(tab)
         }
     }
-    
-    /*
-    fileprivate class OnTabClicklistener: AndroidTabLayout.OnTabSelectedListener {
-        
-        private var cache = [AndroidTab:UITabBarItem]()
-        private var delegate: UITabBarDelegate?
-        private var tabBar: UITabBar!
-        
-        public convenience init(cache: [AndroidTab:UITabBarItem], delegate: UITabBarDelegate?, tabBar: UITabBar) {
-            
-            self.init(javaObject: nil)
-            self.bindNewJavaObject()
-            
-            self.cache = cache
-            self.delegate = delegate
-            self.tabBar = tabBar
-        }
-        
-        override func onTabSelected(tab: AndroidTab) {
-            
-            
-        }
-    }*/
 }
