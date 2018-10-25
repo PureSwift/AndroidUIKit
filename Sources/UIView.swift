@@ -395,7 +395,6 @@ open class UIView: UIResponder {
     @inline(__always)
     private func addSubview(_ view: UIView, _ body: (inout [UIView], UIView) -> ()) {
         
-        NSLog("addSubview")
         NSLog("\((type: self)) \(#function) \(Int(frame.width)) - \(Int(frame.height))")
         
         let oldWindow = view.window
@@ -403,30 +402,24 @@ open class UIView: UIResponder {
         
         // remove from previous superview
         if view.superview !== self {
-            NSLog("it has superview")
             view.removeFromSuperview()
         }
-        NSLog("addSubview 1")
+        
         // store subview in array
         body(&subviews, view)
-        NSLog("addSubview 2")
         view.willMove(toSuperview: self)
         
         // set super view weak reference
         view.superview = self
-        NSLog("addSubview 3")
         // inform view of change
         if oldWindow?.screen !== newWindow?.screen {
             didMoveToScreen()
         }
         view.didMoveToSuperview()
-        NSLog("addSubview 4")
         // Android
         androidView.addView(view.androidView)
-        NSLog("addSubview5")
         // inform
         didAddSubview(view)
-        NSLog("addSubview6")
         // force redraw
         setNeedsDisplay()
     }
@@ -519,7 +512,7 @@ open class UIView: UIResponder {
         superview.subviews.remove(at: index)
         
         let androidViewIndex = superview.androidView.indexOfChild(child: self.androidView)
-        NSLog("\(#function) androidViewIndex: \(androidViewIndex)")
+        
         if(androidViewIndex >= 0){
             superview.androidView.removeViewAt(index: androidViewIndex)
         }
@@ -965,4 +958,5 @@ open class UIView: UIResponder {
 // MARK: - Supporting Types
 
 public let UIViewNoIntrinsicMetric: CGFloat = -1.0
+
 

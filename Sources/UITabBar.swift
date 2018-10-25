@@ -12,10 +12,25 @@ import java_lang
 /// A control that displays one or more buttons in a tab bar for selecting between different subtasks, views, or modes in an app.
 open class UITabBar: UIView {
     
+    let tabBarBackgroundId = UIScreen.main.activity.getIdentifier(name: "tabBarBackground", type: "color")
+    let tabBarItemSelectedIndicatorColorId = UIScreen.main.activity.getIdentifier(name: "tabBarItemSelectedIndicatorColor", type: "color")
+    let tabBarItemNormalId = UIScreen.main.activity.getIdentifier(name: "tabBarItemNormal", type: "color")
+    let tabBarItemSelectedColorId = UIScreen.main.activity.getIdentifier(name: "tabBarItemSelectedColor", type: "color")
+    
     internal lazy var androidTabLayout: Android.Widget.TabLayout = { [unowned self] in
-        let tabLayout = Android.Widget.TabLayout.init(context: UIApplication.shared.androidActivity)
+        
+        let context = UIApplication.shared.androidActivity
+        
+        let tabLayout = Android.Widget.TabLayout.init(context: context)
         
         tabLayout.layoutParams = AndroidFrameLayoutLayoutParams.init(width: AndroidFrameLayoutLayoutParams.MATCH_PARENT, height: AndroidFrameLayoutLayoutParams.WRAP_CONTENT)
+        
+        tabLayout.setBackgroundColor(color: AndroidContextCompat.getColor(context: UIScreen.main.activity, colorRes: tabBarBackgroundId))
+        
+        tabLayout.setTabTextColors(normalColor: AndroidContextCompat.getColor(context: context, colorRes: tabBarItemNormalId),
+                                   selectedColor: AndroidContextCompat.getColor(context: context, colorRes: tabBarItemSelectedColorId))
+        
+        tabLayout.setSelectedTabIndicatorColor(color: AndroidContextCompat.getColor(context: context, colorRes: tabBarItemSelectedIndicatorColorId))
         
         return tabLayout
         }()
@@ -28,7 +43,7 @@ open class UITabBar: UIView {
     
     override func updateAndroidViewSize() {
         
-        let frameDp = bounds.applyingDP()
+        let frameDp = frame.applyingDP()
         
         // set origin
         self.androidView.setX(x: Float(frameDp.minX))
@@ -67,6 +82,28 @@ open class UITabBar: UIView {
         let onSelectedListener = OnTabClicklistener.init(action: action)
         
         self.androidTabLayout.addOnTabSelectedListener(onSelectedListener)
+    }
+    
+    private func androidTintDrawable(iconId: Int, colorId: Int) -> AndroidGraphicsDrawableDrawable? {
+        
+        let context = UIApplication.shared.androidActivity
+        
+        guard let resource = context.resources
+            else { return nil }
+        
+        var iconVectorDrawable: AndroidGraphicsDrawableDrawable? = AndroidVectorDrawableCompat.create(res: resource, resId: iconId, theme: nil)
+        guard let iconVector = iconVectorDrawable else { return nil }
+        
+        let iconDrawable = iconVector as AndroidGraphicsDrawableDrawable
+        
+        iconVectorDrawable = AndroidDrawableCompat.wrap(drawable: iconDrawable)
+        
+        guard let finalIconVectorDrawable = iconVectorDrawable
+            else { return nil }
+        
+        AndroidDrawableCompat.setTint(drawable: finalIconVectorDrawable, color: AndroidContextCompat.getColor(context: context, colorRes: colorId))
+        
+        return finalIconVectorDrawable
     }
     
     /// The items displayed by the tab bar.
@@ -111,7 +148,7 @@ open class UITabBar: UIView {
             
             if let image = uiTabBarItem.image, let androidDrawableId = image.androidDrawableId {
                 
-                tab.setIcon(resId: androidDrawableId)
+                tab.icon = androidTintDrawable(iconId: androidDrawableId, colorId: tabBarItemNormalId)
             }
             
             if uiTabBarItem.position == -1 {
@@ -143,7 +180,14 @@ open class UITabBar: UIView {
     public var isTranslucent: Bool = true
     
     /// The tint color to apply to the tab bar background.
-    public var barTintColor: UIColor?
+    public var barTintColor: UIColor? {
+        get {
+            return UIColor.init(androidColor: androidTabLayout.background as! Android.Graphics.Drawable.ColorDrawable)
+        }
+        set {
+            androidTabLayout.background = barTintColor?.androidColor
+        }
+    }
     
     /// The tint color to apply to unselected tabs.
     public var unselectedItemTintColor: UIColor?
@@ -206,6 +250,9 @@ fileprivate extension UITabBar {
     
     fileprivate class OnTabClicklistener: AndroidTabLayout.OnTabSelectedListener {
         
+        let tabBarItemNormalId = UIScreen.main.activity.getIdentifier(name: "tabBarItemNormal", type: "color")
+        let tabBarItemSelectedColorId = UIScreen.main.activity.getIdentifier(name: "tabBarItemSelectedColor", type: "color")
+        
         var action: ((AndroidTab) -> ())!
         
         public convenience init(action: @escaping (AndroidTab) -> ()) {
@@ -219,6 +266,29 @@ fileprivate extension UITabBar {
         override func onTabSelected(tab: AndroidTab) {
             
             self.action(tab)
+            
+            guard let icon = tab.icon
+                else { return }
+            
+            androidTintDrawable(iconVector: icon, colorId: tabBarItemSelectedColorId)
+        }
+        
+        override func onTabUnselected(tab: AndroidTab) {
+            
+            guard let icon = tab.icon
+                else { return }
+            
+            androidTintDrawable(iconVector: icon, colorId: tabBarItemNormalId)
+        }
+        
+        fileprivate func androidTintDrawable(iconVector: AndroidGraphicsDrawableDrawable, colorId: Int){
+            
+            let context = UIApplication.shared.androidActivity
+            
+            let iconDrawable = iconVector as AndroidGraphicsDrawableDrawable
+            
+            AndroidDrawableCompat.setTint(drawable: AndroidDrawableCompat.wrap(drawable: iconDrawable), color: AndroidContextCompat.getColor(context: context, colorRes: colorId))
         }
     }
 }
+

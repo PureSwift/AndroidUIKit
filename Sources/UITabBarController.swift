@@ -17,33 +17,41 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
         view.clipsToBounds = true
         self.view = view
         
-        let (tabBarRect, contentRect) = self.contentRect(for: view.bounds)
+        let (navigationBarRect, tabBarRect, contentRect) = self.contentRect(for: view.bounds)
+        
+        navigationBar.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
+        navigationBar.frame = navigationBarRect
         
         tabBar.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
         tabBar.frame = tabBarRect
         
         self.contentView.frame = contentRect
         
+        self.view.addSubview(navigationBar)
         self.view.addSubview(tabBar)
         self.view.addSubview(contentView)
-    }
-    
-    open override func viewDidLoad() {
-        
-        
     }
     
     /// The tab bar controller’s delegate object.
     public var delegate: UITabBarControllerDelegate?
     
+    private lazy var navigationBar: UINavigationBar = { [unowned self] in
+        
+        let navBar = UINavigationBar.init(frame: .zero)
+        
+        return navBar
+        }()
+    
     /// The tab bar view associated with this controller.
-    public lazy var tabBar: UITabBar = {
-       
-        return UITabBar.init(frame: CGRect(x: 0,
-                                           y: 0,
-                                           width: UIApplication.shared.androidActivity.screen.bounds.width,
-                                           height: 56))
-    }()
+    public lazy var tabBar: UITabBar = { [unowned self] in
+        
+        let tabBar = UITabBar.init(frame: CGRect(x: 0,
+                                                 y: 0,
+                                                 width: UIApplication.shared.androidActivity.screen.bounds.width,
+                                                 height: 56))
+        tabBar.delegate = self
+        return tabBar
+        }()
     
     private var contentView = UIView.init()
     
@@ -61,6 +69,7 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
     
     /// Sets the root view controllers of the tab bar controller.
     public func setViewControllers(_ viewControllers: [UIViewController]?, animated: Bool){
+        NSLog("\(type(of: self)) \(#function)")
         
         if _viewControllers.count == 0 {
             
@@ -69,49 +78,81 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
         }
         
         guard let newViewControllers = viewControllers else {
-            
+            NSLog("viewControllers is nil")
             return
         }
         
         _viewControllers = newViewControllers
         
         updateTabBar()
+        updateContent(index: 0)
     }
     
-    private func updateTabBar(){
+    private func updateContent(index: Int){
         
-        var tabBarItems = [UITabBarItem]()
+        //remove child
+        
+        let currentViewController = _viewControllers[selectedIndex]
+        currentViewController.view.removeFromSuperview()
+        
+        // add new child
+        selectedIndex = index
+        selectedViewController = _viewControllers[selectedIndex]
+        
+        guard let view = selectedViewController?.view
+            else { return }
+        
+        self.contentView.addSubview(view)
+    }
+    
+    private var tabBarItems = [UITabBarItem]()
+    
+    private func updateTabBar(){
+        NSLog("\(type(of: self)) \(#function) vc.count \(self._viewControllers.count)")
+        
+        tabBarItems.removeAll()
         
         self._viewControllers.forEach { viewController in
             
-            guard let tabBarItem = viewController.tabBarItem
-                else { return }
+            precondition(viewController is UITabBarController == false, "Cannot embed another tab bar controller")
+            
+            guard let tabBarItem = viewController.tabBarItem else {
+                NSLog("\(type(of: self)) \(#function) item is nil")
+                return
+            }
             
             tabBarItems.append(tabBarItem)
         }
         
         self.tabBar.setItems(tabBarItems, animated: false)
-        self.contentView.backgroundColor = UIColor.green
+        self.contentView.backgroundColor = UIColor.gray
     }
     
-    private func contentRect(for bounds: CGRect) -> (tabbar: CGRect, content: CGRect) {
-
+    private func contentRect(for bounds: CGRect) -> (navigationbar: CGRect, tabbar: CGRect, content: CGRect) {
+        
+        let androidToolbarHeight = CGFloat(56)
         let androidTabBarHeight = CGFloat(56)
         
-        let tabBarRect = CGRect(x: bounds.minX,
+        let navigationbarRect = CGRect(x: bounds.minX,
                                        y: bounds.minY,
                                        width: bounds.width,
-                                       height: androidTabBarHeight)
+                                       height: androidToolbarHeight)
+        
+        let tabBarRect = CGRect(x: bounds.minX,
+                                y: navigationbarRect.height,
+                                width: bounds.width,
+                                height: androidTabBarHeight)
         
         let contentRect = CGRect(x: bounds.minX,
-                                 y: bounds.maxY - tabBarRect.height,
+                                 y: bounds.minY + tabBarRect.height + navigationbarRect.height,
                                  width: bounds.width,
-                                 height: bounds.height - androidTabBarHeight)
+                                 height: bounds.height - androidTabBarHeight - androidToolbarHeight)
         
+        NSLog("\(type(of: self)) \(#function): toolbarRect h = \(navigationbarRect.height)")
         NSLog("\(type(of: self)) \(#function): tabBarRect h = \(tabBarRect.height)")
         NSLog("\(type(of: self)) \(#function): contentRect h = \(contentRect.height)")
         
-        return (tabBarRect, contentRect)
+        return (navigationbarRect, tabBarRect, contentRect)
     }
     
     /// The subset of view controllers managed by this tab bar controller that can be customized.
@@ -148,7 +189,13 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
     
     public func tabBar(_ uiTableBar: UITabBar, didSelect: UITabBarItem) {
         
+        NSLog("\(type(of: self)) \(#function)")
         
+        guard let index = tabBarItems.index(of: didSelect) else {
+            NSLog("\(type(of: self)) \(#function) tabbaritem not found")
+            return
+        }
+        updateContent(index: index)
     }
 }
 
@@ -158,7 +205,7 @@ public protocol UITabBarControllerDelegate {
     
     /// Asks the delegate whether the specified view controller should be made active.
     func tabBarController(_ uiTabBatController: UITabBarController, shouldSelect: UIViewController) -> Bool
-
+    
     /// Tells the delegate that the user selected an item in the tab bar.
     func tabBarController(_ uiTabBatController: UITabBarController, didSelect: UIViewController)
     
@@ -240,5 +287,4 @@ public enum UIInterfaceOrientation: Int {
     case landscapeLeft = 4
     case landscapeRight = 3
 }
-
 
