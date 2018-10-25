@@ -18,6 +18,9 @@ open class UIViewController: UIResponder {
     
     internal var androidAlertDialog: AndroidAlertDialog?
     
+    /// The tab bar item that represents the view controller when added to a tab bar controller.
+    public var tabBarItem: UITabBarItem!
+    
     public init?(coder: NSCoder) {
         
         return nil

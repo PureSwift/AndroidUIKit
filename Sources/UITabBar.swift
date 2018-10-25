@@ -60,11 +60,11 @@ open class UITabBar: UIView {
             guard let uiTabBarItem = _uiTabBarItem
                 else { return }
             
+            self.selectedItem = uiTabBarItem
             self.delegate?.tabBar(tabBar, didSelect: uiTabBarItem)
         }
         
         let onSelectedListener = OnTabClicklistener.init(action: action)
-        //let onSelectedListener = OnTabClicklistener.init(cache: cache, delegate: delegate, tabBar: self)
         
         self.androidTabLayout.addOnTabSelectedListener(onSelectedListener)
     }
@@ -87,8 +87,11 @@ open class UITabBar: UIView {
             androidTabLayout.removeAllTabs()
         }
         
-        guard let items = uiTabBarItem
-            else { return }
+        guard let items = uiTabBarItem else {
+            _items.removeAll()
+            androidTabLayout.removeAllTabs()
+            return
+        }
         
         self._items = items
         updateAndroidTabLayout()
@@ -121,6 +124,13 @@ open class UITabBar: UIView {
             
             cache[uiTabBarItem.androidId] = uiTabBarItem
         }
+        
+        guard self._items.count > 0,
+            self.androidTabLayout.getTabCount() > 0
+            else { return }
+        
+        self.selectedItem = self._items[0]
+        androidTabLayout.getTabAt(index: 0).select()
     }
     
     /// The currently selected item on the tab bar.
