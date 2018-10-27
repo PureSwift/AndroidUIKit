@@ -38,7 +38,7 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
     private lazy var navigationBar: UINavigationBar = { [unowned self] in
         
         let navBar = UINavigationBar.init(frame: .zero)
-        
+        navBar.delegate = self
         return navBar
         }()
     
@@ -53,7 +53,7 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
         return tabBar
         }()
     
-    private var contentView = UIView.init()
+    internal var contentView = UIView.init()
     
     /// An array of the root view controllers displayed by the tab bar interface.
     public var viewControllers: [UIViewController]? {
@@ -71,12 +71,6 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
     public func setViewControllers(_ viewControllers: [UIViewController]?, animated: Bool){
         NSLog("\(type(of: self)) \(#function)")
         
-        if _viewControllers.count == 0 {
-            
-            _viewControllers.removeAll()
-            tabBar.items = nil
-        }
-        
         guard let newViewControllers = viewControllers else {
             NSLog("viewControllers is nil")
             return
@@ -84,8 +78,16 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
         
         _viewControllers = newViewControllers
         
+        guard _viewControllers.count > 0 else {
+            
+            _viewControllers.removeAll()
+            tabBar.items = nil
+            return
+        }
+        
         updateTabBar()
         updateContent(index: 0)
+        navigationBar.pushItem(viewControllers![0].navigationItem, animated: false)
     }
     
     private func updateContent(index: Int){
@@ -94,14 +96,16 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
         
         let currentViewController = _viewControllers[selectedIndex]
         currentViewController.view.removeFromSuperview()
+        currentViewController.removeFromParent()
         
         // add new child
         selectedIndex = index
         selectedViewController = _viewControllers[selectedIndex]
         
-        guard let view = selectedViewController?.view
+        guard let selectedVC = selectedViewController, let view = selectedVC.view
             else { return }
         
+        self.addChild(selectedVC)
         self.contentView.addSubview(view)
     }
     
@@ -196,6 +200,14 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
             return
         }
         updateContent(index: index)
+        navigationBar.pushItem(viewControllers![index].navigationItem, animated: false)
+    }
+}
+
+extension UITabBarController: UINavigationBarDelegate {
+    
+    public func navigationBar(_ navigationBar: UINavigationBar, didPush item: UINavigationItem) {
+        NSLog("navigationBar")
     }
 }
 
@@ -287,4 +299,3 @@ public enum UIInterfaceOrientation: Int {
     case landscapeLeft = 4
     case landscapeRight = 3
 }
-

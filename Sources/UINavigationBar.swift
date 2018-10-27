@@ -75,6 +75,18 @@ open class UINavigationBar: UIView {
         androidToolbar.layoutParams = Android.Widget.FrameLayout.FLayoutParams(width: Int(frameDp.width), height: Int(frameDp.height))
     }
     
+    private func addMenuItem(uiBarButtonItem: UIBarButtonItem, groundId: Int){
+        
+        let menuItem = androidToolbar.menu.add(groupId: groundId, itemId: uiBarButtonItem.androidMenuItemId, order: 1, title: uiBarButtonItem.title ?? "")
+        menuItem.setShowAsAction(action: AndroidMenuItemForward.ShowAsAction.ifRoom)
+        
+        if let image = uiBarButtonItem.image,
+            let androidDrawableId = image.androidDrawableId {
+            
+            menuItem.setIcon(resId: androidDrawableId)
+        }
+    }
+    
     private func updateAndroidToolbar(){
         
         guard let item = _navigationStack.last
@@ -83,22 +95,19 @@ open class UINavigationBar: UIView {
         // configure views
         androidToolbar.title = item.title ?? ""
         
-        let menu = androidToolbar.menu
-        
-        menu.clear()
+        androidToolbar.menu.clear()
         
         if item.leftBarButtonItem != nil {
             
             guard let leftBarButtonItem = item.leftBarButtonItem
                 else { return }
             
-            menu.add(groupId: 2, itemId: leftBarButtonItem.androidMenuItemId, order: 1, title: leftBarButtonItem.title ?? "")
-                .setShowAsAction(action: AndroidMenuItemForward.ShowAsAction.ifRoom)
+            addMenuItem(uiBarButtonItem: leftBarButtonItem, groundId: 2)
         }
         
         item.leftBarButtonItems?.forEach { barButton in
-            menu.add(groupId: 2, itemId: barButton.androidMenuItemId, order: 1, title: barButton.title ?? "")
-                .setShowAsAction(action: AndroidMenuItemForward.ShowAsAction.ifRoom)
+            
+            addMenuItem(uiBarButtonItem: barButton, groundId: 2)
         }
         
         if item.rightBarButtonItem != nil {
@@ -106,13 +115,12 @@ open class UINavigationBar: UIView {
             guard let rightBarButtonItem = item.rightBarButtonItem
                 else { return }
             
-            menu.add(groupId: 1, itemId: rightBarButtonItem.androidMenuItemId, order: 1, title: rightBarButtonItem.title ?? "")
-                .setShowAsAction(action: AndroidMenuItemForward.ShowAsAction.ifRoom)
+            addMenuItem(uiBarButtonItem: rightBarButtonItem, groundId: 1)
         }
         
         item.rightBarButtonItems?.forEach { barButton in
-            menu.add(groupId: 1, itemId: barButton.androidMenuItemId, order: 1, title: barButton.title ?? "")
-                .setShowAsAction(action: AndroidMenuItemForward.ShowAsAction.ifRoom)
+            
+            addMenuItem(uiBarButtonItem: barButton, groundId: 1)
         }
         
         androidToolbar.setOnMenuItemClickListener { menuItem in
@@ -160,6 +168,7 @@ open class UINavigationBar: UIView {
     }
     
     // Returns the item that was popped.
+    @discardableResult
     public func popItem(animated: Bool) -> UINavigationItem? {
         
         NSLog("\(type(of: self)) \(#function) 1")
@@ -214,4 +223,3 @@ private extension UINavigationBar {
         case pop
     }
 }
-

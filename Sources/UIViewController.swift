@@ -285,7 +285,14 @@ open class UIViewController: UIResponder {
         return nil
     }
     
-    public final private(set) weak var parent: UIViewController?
+    public final private(set) weak var parent: UIViewController? {
+        
+        didSet{
+            didAttachOnParent()
+        }
+    }
+    
+    open func didAttachOnParent(){}
     
     //public final var navigationController: UINavigationController?
     
@@ -365,4 +372,3 @@ open class UIViewController: UIResponder {
         }
     }
 }
-

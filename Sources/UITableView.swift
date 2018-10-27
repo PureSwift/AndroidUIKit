@@ -134,6 +134,7 @@ final public class UITableView: UIView {
         recyclerView.setX(x: Float(frameDp.minX))
         recyclerView.setY(y: Float(frameDp.minY))
         
+        NSLog("aaaaaaaaaaa w: \(Int(frameDp.width)) - h: \(Int(frameDp.height))")
         // set size
         recyclerView.layoutParams = Android.Widget.FrameLayout.FLayoutParams(width: Int(frameDp.width), height: Int(frameDp.height))
     }
