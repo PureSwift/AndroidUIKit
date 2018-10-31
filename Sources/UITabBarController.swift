@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Android
 
 /// A container view controller that manages a radio-style selection interface,
 /// where the selection determines which child view controller to display.
@@ -223,98 +224,87 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
     }
 }
 
+// MARK: - UINavigationBarDelegate
+
 extension UITabBarController: UINavigationBarDelegate {
     
+    public func navigationBar(_ navigationBar: UINavigationBar, shouldPush item: UINavigationItem) -> Bool  {
+        NSLog("\(type(of: self)) \(#function)")
+        
+        NSLog("backbutton is nil \(item.backBarButtonItem == nil)")
+        NSLog("backbutton is hidden \(item.hidesBackButton)")
+        
+        guard let selectedVC = self.selectedViewController
+            else { return false }
+        
+        if selectedVC is UINavigationController {
+            
+            if(item.backBarButtonItem == nil && !item.hidesBackButton){
+                showDefaultBackButton(androidToolbar: navigationBar.androidToolbar)
+            }
+        } else {
+            
+            navigationBar.androidToolbar.navigationIcon = nil
+        }
+        
+        return true
+    }
+    
     public func navigationBar(_ navigationBar: UINavigationBar, didPush item: UINavigationItem) {
-        NSLog("navigationBar")
-    }
-}
-
-public protocol UITabBarControllerDelegate {
-    
-    // Managing Tab Bar Selections
-    
-    /// Asks the delegate whether the specified view controller should be made active.
-    func tabBarController(_ uiTabBatController: UITabBarController, shouldSelect: UIViewController) -> Bool
-    
-    /// Tells the delegate that the user selected an item in the tab bar.
-    func tabBarController(_ uiTabBatController: UITabBarController, didSelect: UIViewController)
-    
-    // Managing Tab Bar Customizations
-    
-    /// Tells the delegate that the tab bar customization sheet is about to be displayed.
-    func tabBarController(_ uiTabBatController: UITabBarController, willBeginCustomizing: [UIViewController])
-    
-    /// Tells the delegate that the tab bar customization sheet is about to be dismissed.
-    func tabBarController(_ uiTabBatController: UITabBarController, willEndCustomizing: [UIViewController], changed: Bool)
-    
-    /// Tells the delegate that the tab bar customization sheet was dismissed.
-    func tabBarController(_ uiTabBatController: UITabBarController, didEndCustomizing: [UIViewController], changed: Bool)
-    
-    // Overriding View Rotation Settings
-    
-    /// Called to allow the delegate to provide the complete set of supported interface orientations for the tab bar controller.
-    func tabBarControllerSupportedInterfaceOrientations(_ uiTabBatController: UITabBarController) -> UIInterfaceOrientationMask
-    
-    /// Called to allow the delegate to provide the preferred orientation for presentation of the tab bar controller.
-    func tabBarControllerPreferredInterfaceOrientationForPresentation(_ uiTabBatController: UITabBarController) -> UIInterfaceOrientation
-    
-    // Supporting Custom Tab Bar Transition Animations
-    
-    /// Called to allow the delegate to return a UIViewControllerAnimatedTransitioning delegate object for use during a noninteractive tab bar view controller transition.
-    //func tabBarController(_ uiTabBatController: UITabBarController, animationControllerForTransitionFrom: UIViewController, to: UIViewController) -> UIViewControllerAnimatedTransitioning?
-    
-    /// Called to allow the delegate to return a UIViewControllerInteractiveTransitioning delegate object for use during an animated tab bar transition.
-    //func tabBarController(_ uiTabBatController: UITabBarController, interactionControllerFor: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning?
-}
-
-public struct UIInterfaceOrientationMask: OptionSet, RawRepresentable, Equatable {
-    public let rawValue: Int
-    
-    public init(rawValue: Int){
-        self.rawValue = rawValue
-    }
-    
-    public static var portrait    = UIInterfaceOrientationMask(rawValue: 1 << 0)
-    public static var landscapeLeft  = UIInterfaceOrientationMask(rawValue: 1 << 1)
-    public static var landscapeRight   = UIInterfaceOrientationMask(rawValue: 1 << 2)
-    public static var portraitUpsideDown   = UIInterfaceOrientationMask(rawValue: 1 << 3)
-    public static var landscape   = UIInterfaceOrientationMask(rawValue: 1 << 4)
-    
-    public static var all: UIInterfaceOrientationMask = [.portrait, .landscapeLeft, .landscapeRight, .portraitUpsideDown, .landscape]
-    
-    public static var allButUpsideDown: UIInterfaceOrientationMask = [.portrait, .landscapeLeft, .landscapeRight, .landscape]
-}
-
-public enum UIInterfaceOrientation: Int {
-    
-    var isLandscape: Bool {
+        NSLog("\(type(of: self)) \(#function)")
         
-        switch self {
-            
-        case .portrait: return false
-        case .landscapeLeft: return true
-        case .landscapeRight: return true
-        case .portraitUpsideDown: return false
-        case .unknown: return false
+    }
+    
+    public func navigationBar(_ navigationBar: UINavigationBar, shouldPop item: UINavigationItem) -> Bool {
+        NSLog("\(type(of: self)) \(#function)")
+        
+        if(item.backBarButtonItem == nil && !item.hidesBackButton){
+            navigationBar.androidToolbar.navigationIcon = nil
+        }
+        
+        return true
+    }
+    
+    public func navigationBar(_ navigationBar: UINavigationBar, didPop item: UINavigationItem) {
+        NSLog("\(type(of: self)) \(#function)")
+        
+        guard let topItem = navigationBar.topItem else {
+            return
+        }
+        
+        if(topItem.backBarButtonItem == nil && !topItem.hidesBackButton ){
+            showDefaultBackButton(androidToolbar: navigationBar.androidToolbar)
         }
     }
     
-    var isPortrait: Bool  {
+    private func showDefaultBackButton(androidToolbar: AndroidToolbar) {
         
-        switch self {
+        let arrowBackId = UIScreen.main.activity.getIdentifier(name: "ic_arrow_back", type: "drawable")
+        let navigationVectorDrawableIcon = AndroidVectorDrawableCompat.create(res:  UIScreen.main.activity.resources!, resId: arrowBackId, theme: nil)
+        
+        guard let navigationVectorIcon = navigationVectorDrawableIcon
+            else { return }
+        
+        var navIconDrawable = navigationVectorIcon as AndroidGraphicsDrawableDrawable
+        navIconDrawable = AndroidDrawableCompat.wrap(drawable: navIconDrawable)
+        AndroidDrawableCompat.setTint(drawable: navIconDrawable, color: AndroidGraphicsColor.BLACK)
+        
+        navigationBar.androidToolbar.navigationIcon = navIconDrawable
+        
+        navigationBar.androidToolbar.setNavigationOnClickListener {
             
-        case .portrait: return true
-        case .landscapeLeft: return false
-        case .landscapeRight: return false
-        case .portraitUpsideDown: return true
-        case .unknown: return false
+            guard let selectedVC = self.selectedViewController
+                else { return }
+            
+            if selectedVC is UINavigationController {
+                
+                let _navViewController = selectedVC as? UINavigationController
+                
+                guard let navViewController = _navViewController
+                    else { return }
+                
+                navViewController.popViewController(animated: false)
+            }
         }
     }
-    
-    case unknown = 0
-    case portrait = 1
-    case portraitUpsideDown = 2
-    case landscapeLeft = 4
-    case landscapeRight = 3
 }

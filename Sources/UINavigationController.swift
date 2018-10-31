@@ -116,7 +116,7 @@ open class UINavigationController: UIViewController {
         navigationBar.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
         //visibleViewControllerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
-        content.backgroundColor = .blue
+        content.backgroundColor = .black
         
         // add subviews
         view.addSubview(navigationBar)
@@ -191,16 +191,36 @@ open class UINavigationController: UIViewController {
         
         self.visibleViewController = newVisibleViewController
         
+        if parent is UITabBarController {
+            
+            let _parentController = parent as? UITabBarController
+            
+            guard let parentController = _parentController
+                else { return }
+            
+            let newContentFrame = CGRect.init(x: 0, y: 0, width: parentController.contentView.frame.width, height: parentController.contentView.frame.height)
+            
+            self.view.frame = newContentFrame
+        }
+        
         let (contentRect, navigationBarRect, toolbarRect) = self.contentRect(for: view.bounds)
         navigationBar.frame = navigationBarRect
         toolbar.frame = toolbarRect
         content.frame = contentRect
         
-        //newVisibleViewController.view.frame = contentRect
-        //newVisibleViewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         newVisibleViewController.view.removeFromSuperview()
-        
         self.content.addSubview(newVisibleViewController.view)
+        
+        if parent is UITabBarController {
+            
+            let parentController = parent as? UITabBarController
+            
+            guard let tabBarController = parentController
+                else { return }
+            
+            self.view.removeFromSuperview()
+            tabBarController.contentView.addSubview(self.view)
+        }
         
         print("\(type(of: self)) \(#function) newVisibleViewController type: \(type(of: newVisibleViewController))")
         NSLog("\(type(of: self)) \(#function) navigationBar Rect height \(navigationBarRect.height)")
@@ -238,14 +258,6 @@ open class UINavigationController: UIViewController {
         
         if parent is UITabBarController {
             
-            let _parentController = parent as? UITabBarController
-            
-            guard let parentController = _parentController
-                else { return }
-            
-            let newContentFrame = CGRect.init(x: 0, y: 0, width: parentController.contentView.frame.width, height: parentController.contentView.frame.height)
-            
-            self.view.frame = newContentFrame
             updateVisibleViewController(animated: false)
         }
     }
@@ -304,7 +316,6 @@ public extension UINavigationController {
         
         if( parent is UITabBarController ){
             
-            NSLog("\(type(of: self)) \(#function) parent is tabbar")
             let _tabBarControllerParent = parent as? UITabBarController
             
             guard let tabBarControllerParent = _tabBarControllerParent
@@ -313,7 +324,6 @@ public extension UINavigationController {
             tabBarControllerParent.navigationBar.pushItem(viewController.navigationItem, animated: false)
         } else {
             
-            NSLog("\(type(of: self)) \(#function) parent is not tabbar")
             navigationBar.pushItem(viewController.navigationItem, animated: animated)
         }
     }
@@ -370,10 +380,7 @@ public extension UINavigationController {
             guard let tabBarControllerParent = _tabBarControllerParent
                 else { fatalError("\(type(of: self)) \(#function) tabBarControllerParent is nil") }
             
-            guard let newVisibleViewController = self.topViewController
-                else { fatalError("Must have visible view controller") }
-            
-            tabBarControllerParent.navigationBar.pushItem(newVisibleViewController.navigationItem, animated: false)
+            tabBarControllerParent.navigationBar.popItem(animated: false)
         } else {
             
             navigationBar.popItem(animated: false)
@@ -464,7 +471,7 @@ extension UINavigationController: UINavigationBarDelegate {
         
         var navIconDrawable = navigationVectorIcon as AndroidGraphicsDrawableDrawable
         navIconDrawable = AndroidDrawableCompat.wrap(drawable: navIconDrawable)
-        AndroidDrawableCompat.setTint(drawable: navIconDrawable, color: AndroidGraphicsColor.WHITE)
+        AndroidDrawableCompat.setTint(drawable: navIconDrawable, color: AndroidGraphicsColor.BLACK)
         
         navigationBar.androidToolbar.navigationIcon = navIconDrawable
         

@@ -417,7 +417,18 @@ open class UIView: UIResponder {
         }
         view.didMoveToSuperview()
         // Android
-        androidView.addView(view.androidView)
+        
+        NSLog("\((type: self)) \(#function) addViewByIndex: \(addViewByIndex)")
+        if(addViewByIndex != -1){
+            
+            NSLog("\((type: self)) \(#function) yes by addViewByIndex: \(addViewByIndex)")
+            androidView.addView(view.androidView, index: addViewByIndex)
+            addViewByIndex = -1
+        }else{
+            
+            NSLog("\((type: self)) \(#function) not by addViewByIndex")
+            androidView.addView(view.androidView)
+        }
         // inform
         didAddSubview(view)
         // force redraw
@@ -518,6 +529,8 @@ open class UIView: UIResponder {
         }
     }
     
+    private var addViewByIndex = -1
+    
     /// Inserts a subview at the specified index.
     ///
     /// - Parameter view: The view to insert. This value cannot be nil.
@@ -531,8 +544,11 @@ open class UIView: UIResponder {
     /// If view already has a superview and that view is not the receiver,
     /// this method removes the previous superview before making the receiver its new superview.
     public func insertSubview(_ view: UIView, at index: Int) {
-        
-        addSubview(view, { $0.insert($1, at: index) })
+        NSLog("\(#function) index: \(index)")
+        addViewByIndex = index
+        addSubview(view, {
+            $0.insert($1, at: index)
+        })
     }
     
     /// Inserts a view above another view in the view hierarchy.
