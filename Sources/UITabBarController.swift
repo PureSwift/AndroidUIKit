@@ -35,7 +35,7 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
     /// The tab bar controller’s delegate object.
     public var delegate: UITabBarControllerDelegate?
     
-    private lazy var navigationBar: UINavigationBar = { [unowned self] in
+    internal lazy var navigationBar: UINavigationBar = { [unowned self] in
         
         let navBar = UINavigationBar.init(frame: .zero)
         navBar.delegate = self
@@ -129,7 +129,6 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
         }
         
         self.tabBar.setItems(tabBarItems, animated: false)
-        self.contentView.backgroundColor = UIColor.gray
     }
     
     private func contentRect(for bounds: CGRect) -> (navigationbar: CGRect, tabbar: CGRect, content: CGRect) {
@@ -200,7 +199,27 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
             return
         }
         updateContent(index: index)
-        navigationBar.pushItem(viewControllers![index].navigationItem, animated: false)
+        
+        guard let viewController = viewControllers?[index]
+            else { return }
+        
+        if(viewController is UINavigationController){
+            
+            NSLog("\(type(of: self)) \(#function) viewController is UINavigationController")
+            let navViewController = viewController as! UINavigationController
+            
+            guard let navigationItems = navViewController.navigationBar.items
+                else { return }
+            
+            guard let navigationItem = navigationItems.last
+                else { return }
+            
+            navigationBar.pushItem(navigationItem, animated: false)
+        } else {
+            
+            NSLog("\(type(of: self)) \(#function) viewController is not UINavigationController")
+            navigationBar.pushItem(viewController.navigationItem, animated: false)
+        }
     }
 }
 
