@@ -86,6 +86,10 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
             return
         }
         
+        viewControllers?.forEach {
+            self.addChild($0)
+        }
+        
         updateTabBar()
         updateContent(index: 0)
     }
@@ -96,7 +100,6 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
         
         let currentViewController = _viewControllers[selectedIndex]
         currentViewController.view.removeFromSuperview()
-        currentViewController.removeFromParent()
         
         // add new child
         selectedIndex = index
@@ -105,7 +108,8 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
         guard let selectedVC = selectedViewController, let view = selectedVC.view
             else { return }
         
-        self.addChild(selectedVC)
+        NSLog("children count = \(self.children.count)")
+        
         self.contentView.addSubview(view)
         
         if(selectedVC is UINavigationController){
@@ -234,15 +238,13 @@ extension UITabBarController: UINavigationBarDelegate {
         guard let selectedVC = self.selectedViewController
             else { return false }
         
-        if selectedVC is UINavigationController {
+        if selectedVC is UINavigationController && item.backBarButtonItem == nil && !item.hidesBackButton {
             
-            if(item.backBarButtonItem == nil && !item.hidesBackButton){
-                showDefaultBackButton(androidToolbar: navigationBar.androidToolbar)
-            }
-        } else {
-            
-            navigationBar.androidToolbar.navigationIcon = nil
+            showDefaultBackButton(androidToolbar: navigationBar.androidToolbar)
+            return true
         }
+        
+        navigationBar.androidToolbar.navigationIcon = nil
         
         return true
     }

@@ -71,7 +71,7 @@ open class UINavigationController: UIViewController {
     
     /// Initializes and returns a newly created navigation controller.
     public init(rootViewController: UIViewController) {
-        
+        NSLog("111 - \(#function) ")
         #if os(iOS)
         super.init(nibName: nil, bundle: nil)
         #else
@@ -98,30 +98,30 @@ open class UINavigationController: UIViewController {
         let view = UIView(frame: UIScreen.main.bounds)
         view.clipsToBounds = true
         self.view = view
-        
-        //guard let visibleViewControllerView = visibleViewController?.view
-        //    else { fatalError("No visible view controller") }
-        
-        // calculate frame
-        let (contentRect, navigationBarRect, toolbarRect) = self.contentRect(for: view.bounds)
-        
-        navigationBar.frame = navigationBarRect
-        toolbar.frame = toolbarRect
-        content.frame = contentRect
-        //visibleViewControllerView.frame = contentRect
-        
-        // set resizing
-        content.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
-        toolbar.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
-        navigationBar.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
-        //visibleViewControllerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
-        content.backgroundColor = .black
-        
-        // add subviews
-        view.addSubview(navigationBar)
-        view.addSubview(content)
-        view.addSubview(toolbar)
+        self.view.backgroundColor = .black
+        /*
+         //guard let visibleViewControllerView = visibleViewController?.view
+         //    else { fatalError("No visible view controller") }
+         
+         // calculate frame
+         let (contentRect, navigationBarRect, toolbarRect) = self.contentRect(for: view.bounds)
+         
+         navigationBar.frame = navigationBarRect
+         toolbar.frame = toolbarRect
+         content.frame = contentRect
+         
+         // set resizing
+         content.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
+         toolbar.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
+         navigationBar.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
+         //visibleViewControllerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+         
+         content.backgroundColor = .black
+         
+         // add subviews
+         view.addSubview(navigationBar)
+         view.addSubview(content)
+         view.addSubview(toolbar)*/
     }
     
     open override func viewWillLayoutSubviews() {
@@ -148,7 +148,6 @@ open class UINavigationController: UIViewController {
                                  width: bounds.width,
                                  height: androidBottomNavigationBarHeight)
         
-        
         let parentIsTabBarController = parent is UITabBarController
         if(parentIsTabBarController){
             _isNavigationBarHidden = true
@@ -168,70 +167,88 @@ open class UINavigationController: UIViewController {
         NSLog("\(type(of: self)) \(#function): parentIsTabBarController = \(parentIsTabBarController)")
         NSLog("\(type(of: self)) \(#function): _isNavigationBarHidden = \(_isNavigationBarHidden)")
         NSLog("\(type(of: self)) \(#function): isToolbarHidden = \(isToolbarHidden)")
-        
-        
         NSLog("\(type(of: self)) \(#function): end contentRectHeight = \(contentRect.height)")
+        
         return (contentRect, navigationBarRect, toolbarRect)
     }
     
+    private func prepareVisibleViewController(for bounds: CGRect){
+        
+        guard let visibleViewController = self.visibleViewController
+            else { return }
+        
+        let androidActionBarHeight = CGFloat.applyDP(pixels: UIScreen.main.activity.actionBarHeighPixels)
+        let androidBottomNavigationBarHeight = CGFloat(56)
+        
+        var contentRect = bounds
+        
+        let navigationBarRect = CGRect(x: bounds.minX,
+                                       y: bounds.minY,
+                                       width: bounds.width,
+                                       height: androidActionBarHeight)
+        
+        let toolbarRect = CGRect(x: bounds.minX,
+                                 y: bounds.maxY - toolbar.frame.size.height,
+                                 width: bounds.width,
+                                 height: androidBottomNavigationBarHeight)
+        
+        let parentIsTabBarController = parent is UITabBarController
+        if(parentIsTabBarController){
+            _isNavigationBarHidden = true
+        }
+        
+        if !_isNavigationBarHidden {
+            
+            contentRect.origin.y += navigationBarRect.height
+            contentRect.size.height -= navigationBarRect.height
+            
+            self.navigationBar.frame = navigationBarRect
+            self.view.addSubview(navigationBar)
+        } else {
+            
+            self.navigationBar.frame = .zero
+            self.navigationBar.removeFromSuperview()
+        }
+        
+        if !isToolbarHidden {
+            
+            contentRect.size.height -= toolbarRect.height
+            
+            self.toolbar.frame = toolbarRect
+            self.view.addSubview(toolbar)
+        } else {
+            
+            self.toolbar.frame = .zero
+            self.toolbar.removeFromSuperview()
+        }
+        
+        visibleViewController.view.frame = contentRect
+        self.view.addSubview(visibleViewController.view)
+    }
+    
     fileprivate func updateVisibleViewController(animated: Bool) {
-        NSLog("\(type(of: self)) \(#function)")
+        NSLog("111 \(type(of: self)) \(#function)")
         
         guard let newVisibleViewController = self.topViewController
             else { fatalError("Must have visible view controller") }
         
         let oldVisibleViewController = self.visibleViewController
+        oldVisibleViewController?.view.removeFromSuperview()
         
         let isPushing = oldVisibleViewController?.parent != nil
         
         oldVisibleViewController?.beginAppearanceTransition(false, animated: animated)
         newVisibleViewController.beginAppearanceTransition(true, animated: animated)
         
-        self.delegate?.navigationController(self, willShow: newVisibleViewController, animated: animated)
+        //self.delegate?.navigationController(self, willShow: newVisibleViewController, animated: animated)
         
         self.visibleViewController = newVisibleViewController
         
-        if parent is UITabBarController {
-            
-            let _parentController = parent as? UITabBarController
-            
-            guard let parentController = _parentController
-                else { return }
-            
-            let newContentFrame = CGRect.init(x: 0, y: 0, width: parentController.contentView.frame.width, height: parentController.contentView.frame.height)
-            
-            self.view.frame = newContentFrame
-        }
-        
-        let (contentRect, navigationBarRect, toolbarRect) = self.contentRect(for: view.bounds)
-        navigationBar.frame = navigationBarRect
-        toolbar.frame = toolbarRect
-        content.frame = contentRect
-        
-        newVisibleViewController.view.removeFromSuperview()
-        self.content.addSubview(newVisibleViewController.view)
-        
-        if parent is UITabBarController {
-            
-            let parentController = parent as? UITabBarController
-            
-            guard let tabBarController = parentController
-                else { return }
-            
-            self.view.removeFromSuperview()
-            tabBarController.contentView.addSubview(self.view)
-        }
-        
-        print("\(type(of: self)) \(#function) newVisibleViewController type: \(type(of: newVisibleViewController))")
-        NSLog("\(type(of: self)) \(#function) navigationBar Rect height \(navigationBarRect.height)")
-        NSLog("\(type(of: self)) \(#function) content Rect height \(contentRect.height)")
-        NSLog("\(type(of: self)) \(#function) toolbar Rect height \(toolbarRect.height)")
-        NSLog("\(type(of: self)) \(#function) view controller child height \(newVisibleViewController.view.frame.height)")
+        prepareVisibleViewController(for: self.view.bounds)
         
         // FIXME: Animate
         
         // finish animation
-        oldVisibleViewController?.view.removeFromSuperview()
         toolbar.isHidden = _isToolbarHidden
         navigationBar.isHidden = _isNavigationBarHidden
         
@@ -251,15 +268,27 @@ open class UINavigationController: UIViewController {
     }
     
     open override func didAttachOnParent() {
-        NSLog("\(type(of: self)) \(#function)")
+        NSLog("111 \(type(of: self)) \(#function)")
         
         guard let parent = parent
             else { return }
         
         if parent is UITabBarController {
             
-            updateVisibleViewController(animated: false)
+            let _parentController = parent as? UITabBarController
+            
+            guard let tabBarController = _parentController
+                else { return }
+            
+            let newContentFrame = CGRect(x: 0, y: 0, width: tabBarController.contentView.frame.width, height: tabBarController.contentView.frame.height)
+            
+            self.view.bounds = newContentFrame
+            self.view.frame = newContentFrame
+            
+            tabBarController.contentView.addSubview(self.view)
         }
+        
+        updateVisibleViewController(animated: false)
     }
 }
 
@@ -269,7 +298,7 @@ public extension UINavigationController {
     
     /// Replaces the view controllers currently managed by the navigation controller with the specified items.
     public func setViewControllers(_ newViewControllers: [UIViewController], animated: Bool) {
-        NSLog("\(type(of: self)) \(#function)")
+        NSLog("111 - \(type(of: self)) \(#function)")
         
         precondition(newViewControllers.isEmpty == false, "Missing root view controller")
         
@@ -289,7 +318,8 @@ public extension UINavigationController {
         
         // add items
         newViewControllers.forEach {
-            pushViewController($0, animated: animated && $0 === newViewControllers.last)
+            NSLog("111 FOREACH: \(type(of: $0))")
+            pushViewController($0, animated: animated)
         }
     }
 }
@@ -300,7 +330,7 @@ public extension UINavigationController {
     
     /// Pushes a view controller onto the receiver’s stack and updates the display.
     func pushViewController(_ viewController: UIViewController, animated: Bool) {
-        NSLog("\(type(of: self)) \(#function)")
+        NSLog("111 \(type(of: self)) \(#function)")
         
         // assertions
         precondition(viewController is UITabBarController == false, "Cannot embed tab bar controller in navigation controller")
