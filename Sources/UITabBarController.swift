@@ -88,7 +88,6 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
         
         updateTabBar()
         updateContent(index: 0)
-        navigationBar.pushItem(viewControllers![0].navigationItem, animated: false)
     }
     
     private func updateContent(index: Int){
@@ -108,6 +107,24 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
         
         self.addChild(selectedVC)
         self.contentView.addSubview(view)
+        
+        if(selectedVC is UINavigationController){
+            
+            NSLog("\(type(of: self)) \(#function) viewController is UINavigationController")
+            let navViewController = selectedVC as! UINavigationController
+            
+            guard let navigationItems = navViewController.navigationBar.items
+                else { return }
+            
+            guard let navigationItem = navigationItems.last
+                else { return }
+            
+            navigationBar.pushItem(navigationItem, animated: false)
+        } else {
+            
+            NSLog("\(type(of: self)) \(#function) viewController is not UINavigationController")
+            navigationBar.pushItem(selectedVC.navigationItem, animated: false)
+        }
     }
     
     private var tabBarItems = [UITabBarItem]()
@@ -199,28 +216,8 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
             NSLog("\(type(of: self)) \(#function) tabbaritem not found")
             return
         }
+        
         updateContent(index: index)
-        
-        guard let viewController = viewControllers?[index]
-            else { return }
-        
-        if(viewController is UINavigationController){
-            
-            NSLog("\(type(of: self)) \(#function) viewController is UINavigationController")
-            let navViewController = viewController as! UINavigationController
-            
-            guard let navigationItems = navViewController.navigationBar.items
-                else { return }
-            
-            guard let navigationItem = navigationItems.last
-                else { return }
-            
-            navigationBar.pushItem(navigationItem, animated: false)
-        } else {
-            
-            NSLog("\(type(of: self)) \(#function) viewController is not UINavigationController")
-            navigationBar.pushItem(viewController.navigationItem, animated: false)
-        }
     }
 }
 
