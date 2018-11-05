@@ -98,78 +98,11 @@ open class UINavigationController: UIViewController {
         let view = UIView(frame: UIScreen.main.bounds)
         view.clipsToBounds = true
         self.view = view
-        self.view.backgroundColor = .black
-        /*
-         //guard let visibleViewControllerView = visibleViewController?.view
-         //    else { fatalError("No visible view controller") }
-         
-         // calculate frame
-         let (contentRect, navigationBarRect, toolbarRect) = self.contentRect(for: view.bounds)
-         
-         navigationBar.frame = navigationBarRect
-         toolbar.frame = toolbarRect
-         content.frame = contentRect
-         
-         // set resizing
-         content.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
-         toolbar.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
-         navigationBar.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
-         //visibleViewControllerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-         
-         content.backgroundColor = .black
-         
-         // add subviews
-         view.addSubview(navigationBar)
-         view.addSubview(content)
-         view.addSubview(toolbar)*/
     }
     
     open override func viewWillLayoutSubviews() {
         
         
-    }
-    
-    private func contentRect(for bounds: CGRect) -> (content: CGRect, navigationBar: CGRect, toolbar: CGRect) {
-        
-        var contentRect = bounds
-        
-        NSLog("\(type(of: self)) \(#function): start contentRectHeight = \(contentRect.height)")
-        
-        let androidActionBarHeight = CGFloat.applyDP(pixels: UIScreen.main.activity.actionBarHeighPixels)
-        let androidBottomNavigationBarHeight = CGFloat(56)
-        
-        let navigationBarRect = CGRect(x: bounds.minX,
-                                       y: bounds.minY,
-                                       width: bounds.width,
-                                       height: androidActionBarHeight)
-        
-        let toolbarRect = CGRect(x: bounds.minX,
-                                 y: bounds.maxY - toolbar.frame.size.height,
-                                 width: bounds.width,
-                                 height: androidBottomNavigationBarHeight)
-        
-        let parentIsTabBarController = parent is UITabBarController
-        if(parentIsTabBarController){
-            _isNavigationBarHidden = true
-        }
-        
-        if !_isNavigationBarHidden {
-            
-            contentRect.origin.y += navigationBarRect.height
-            contentRect.size.height -= navigationBarRect.height
-        }
-        
-        if !isToolbarHidden {
-            
-            contentRect.size.height -= toolbarRect.height
-        }
-        
-        NSLog("\(type(of: self)) \(#function): parentIsTabBarController = \(parentIsTabBarController)")
-        NSLog("\(type(of: self)) \(#function): _isNavigationBarHidden = \(_isNavigationBarHidden)")
-        NSLog("\(type(of: self)) \(#function): isToolbarHidden = \(isToolbarHidden)")
-        NSLog("\(type(of: self)) \(#function): end contentRectHeight = \(contentRect.height)")
-        
-        return (contentRect, navigationBarRect, toolbarRect)
     }
     
     private func prepareVisibleViewController(for bounds: CGRect){
@@ -188,7 +121,7 @@ open class UINavigationController: UIViewController {
                                        height: androidActionBarHeight)
         
         let toolbarRect = CGRect(x: bounds.minX,
-                                 y: bounds.maxY - toolbar.frame.size.height,
+                                 y: bounds.maxY - androidBottomNavigationBarHeight,
                                  width: bounds.width,
                                  height: androidBottomNavigationBarHeight)
         
@@ -222,6 +155,9 @@ open class UINavigationController: UIViewController {
             self.toolbar.removeFromSuperview()
         }
         
+        toolbar.isHidden = _isToolbarHidden
+        navigationBar.isHidden = _isNavigationBarHidden
+        
         visibleViewController.view.frame = contentRect
         self.view.addSubview(visibleViewController.view)
     }
@@ -240,7 +176,7 @@ open class UINavigationController: UIViewController {
         oldVisibleViewController?.beginAppearanceTransition(false, animated: animated)
         newVisibleViewController.beginAppearanceTransition(true, animated: animated)
         
-        //self.delegate?.navigationController(self, willShow: newVisibleViewController, animated: animated)
+        self.delegate?.navigationController(self, willShow: newVisibleViewController, animated: animated)
         
         self.visibleViewController = newVisibleViewController
         
@@ -249,8 +185,6 @@ open class UINavigationController: UIViewController {
         // FIXME: Animate
         
         // finish animation
-        toolbar.isHidden = _isToolbarHidden
-        navigationBar.isHidden = _isNavigationBarHidden
         
         oldVisibleViewController?.endAppearanceTransition()
         newVisibleViewController.endAppearanceTransition()
