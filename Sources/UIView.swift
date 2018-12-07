@@ -90,8 +90,12 @@ open class UIView: UIResponder {
     /// The default value is `nil`, which results in a transparent background color.
     public final var backgroundColor: UIColor? { didSet {
         /*setNeedsDisplay()*/
-        androidView.background = backgroundColor?.androidColor
+        updatedBackgroundColor()
         }
+    }
+    open func updatedBackgroundColor(){
+        
+        androidView.background = backgroundColor?.androidColor
     }
     
     /// A Boolean value that determines whether the view is hidden.
@@ -974,5 +978,6 @@ open class UIView: UIResponder {
 // MARK: - Supporting Types
 
 public let UIViewNoIntrinsicMetric: CGFloat = -1.0
+
 
 

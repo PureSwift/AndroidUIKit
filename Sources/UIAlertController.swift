@@ -166,6 +166,9 @@ public extension UIViewController {
         
         guard let textFields = alertController.textFields else {
             
+            if(alertController.message != nil){
+                androidAlertDialogBuilder.setMessage(message: alertController.message!)
+            }
             self.androidAlertDialog = androidAlertDialogBuilder.show()
             return
         }
@@ -304,5 +307,6 @@ public extension UIViewController {
         }
     }
 }
+
 
 
