@@ -29,7 +29,7 @@ internal struct WeakArray<Element: AnyObject> {
     
     private var strongReferences: [Element] {
         
-        get { return storage.flatMap { $0.value } }
+        get { return storage.compactMap { $0.value } }
     }
     
     internal mutating func append(_ element: Element) {

@@ -150,7 +150,7 @@ public final class UIApplication: UIResponder {
 
 // MARK: - Supporting Types
 
-public protocol UIApplicationDelegate: class, AndroidApplicationDelegate {
+public protocol UIApplicationDelegate: AndroidApplicationDelegate {
     
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]?) -> Bool
     

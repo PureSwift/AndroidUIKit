@@ -14,7 +14,8 @@ open class UITextField {
     
     internal lazy var androidEditText: AndroidEditText = {
         
-        let density = UIScreen.main.activity.getDensity()
+        let density = UIScreen.main.activity.density
+        
         let dp6 = Int(6 * density)
         
         let editText = AndroidEditText(context: UIApplication.shared.androidActivity)

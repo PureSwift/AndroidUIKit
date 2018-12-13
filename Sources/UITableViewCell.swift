@@ -24,10 +24,9 @@ open class UITableViewCell: UIView {
     
     public private(set) var textLabel: UILabel!
     
+    /// Android Layout name
     public private(set) var layoutName: String?
-    
-    public lazy var viewHolder: UITableViewCellViewHolder = UITableViewCellViewHolder(cell: self)
-    
+        
     // MARK: - Private
     
     internal static let defaultSize = CGSize(width: 320, height: UITableView.defaultRowHeight)
@@ -51,23 +50,28 @@ open class UITableViewCell: UIView {
         addSubview(self.textLabel)
     }
     
-    public func inflateAndroidLayout(layoutName: String) {
-        
-        self.layoutName = layoutName
+    /// Inflate Android layout.
+    public func inflateAndroidLayout(_ layoutName: String) {
         
         androidView.removeAllViews()
         
-        androidView.layoutParams = AndroidFrameLayoutLayoutParams.init(width: AndroidFrameLayoutLayoutParams.WRAP_CONTENT, height: AndroidFrameLayoutLayoutParams.WRAP_CONTENT)
+        androidView.layoutParams = AndroidFrameLayoutLayoutParams(width: AndroidFrameLayoutLayoutParams.WRAP_CONTENT, height: AndroidFrameLayoutLayoutParams.WRAP_CONTENT)
         
         let peripheralViewLayoutId = UIApplication.shared.androidActivity.getIdentifier(name: layoutName, type: "layout")
         
-        let layoutInflarer = Android.View.LayoutInflater.from(context: UIApplication.shared.androidActivity)
+        let layoutInflater = Android.View.LayoutInflater.from(context: UIApplication.shared.androidActivity)
         
-        let itemView = layoutInflarer.inflate(resource: Android.R.Layout(rawValue: peripheralViewLayoutId), root: nil, attachToRoot: false)
+        let itemView = layoutInflater.inflate(resource: Android.R.Layout(rawValue: peripheralViewLayoutId),
+                                              root: nil,
+                                              attachToRoot: false)
+        
+        self.layoutName = layoutName
         
         androidView.addView(itemView)
     }
-    public func addCHildView(view: AndroidView){
+    
+    /// Add Android child view.
+    public func addChildView(view: AndroidView) {
         
         self.layoutName = nil
         
@@ -76,33 +80,6 @@ open class UITableViewCell: UIView {
         androidView.layoutParams = view.layoutParams
         
         androidView.addView(view)
-    }
-    
-    public func getItemView() -> AndroidView {
-        
-        return androidView
-    }
-}
-
-open class UITableViewCellViewHolder: AndroidWidgetRecyclerViewViewHolder {
-    
-    /// Reference to cell (used for configuration)
-    public weak var cell: UITableViewCell?
-    
-    fileprivate convenience init(cell: UITableViewCell) {
-        
-        self.init(javaObject: nil)
-        bindNewJavaObject(itemView: cell.androidView)
-        
-        self.cell = cell
-    }
-    
-    public required init(javaObject: jobject?) {
-        super.init(javaObject: javaObject)
-    }
-    
-    deinit {
-        NSLog("\(type(of: self)) \(#function)")
     }
 }
 
@@ -136,6 +113,3 @@ public enum UITableViewCellEditingStyle: Int {
     case delete
     case insert
 }
-
-
-

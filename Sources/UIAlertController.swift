@@ -188,7 +188,7 @@ public extension UIViewController {
     
     private func inflateTextFields(_ alertController: UIAlertController) -> AndroidView {
         
-        let density = UIScreen.main.activity.getDensity()
+        let density = UIScreen.main.activity.density
         
         let dp3 = Int(3 * density)
         let dp24 = Int(24 * density)
@@ -240,7 +240,7 @@ public extension UIViewController {
         guard cancelAlertActions.count < 2
             else { fatalError("There should only be 1 cancel alert action.") }
         
-        let density = UIScreen.main.activity.getDensity()
+        let density = UIScreen.main.activity.density
         
         let llPadding = Int(3 * density)
         

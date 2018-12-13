@@ -134,7 +134,6 @@ final public class UITableView: UIView {
         recyclerView.setX(x: Float(frameDp.minX))
         recyclerView.setY(y: Float(frameDp.minY))
         
-        NSLog("aaaaaaaaaaa w: \(Int(frameDp.width)) - h: \(Int(frameDp.height))")
         // set size
         recyclerView.layoutParams = Android.Widget.FrameLayout.FLayoutParams(width: Int(frameDp.width), height: Int(frameDp.height))
     }
@@ -156,7 +155,11 @@ final public class UITableView: UIView {
     public func dequeueReusableCell(withIdentifier identifier: String) -> UITableViewCell? {
         
         // get cell from reusable cell pool
-        return adapter?.reusableCells.values.first(where: { $0.reuseIdentifier == identifier })
+        guard let (_, reusableCell) = adapter?.reusableCell,
+            reusableCell.reuseIdentifier == identifier
+            else { return nil }
+        
+        return reusableCell
     }
     
     public func dequeueReusableCell(withIdentifier identifier: String,
@@ -165,11 +168,24 @@ final public class UITableView: UIView {
         guard let adapter = self.adapter
             else { fatalError("No adapter configured") }
         
-        // get cell from reusable cell pool
-        guard let cell = adapter.reusableCells[indexPath]
-            else { fatalError("No reusable cell for \(identifier)") }
+        guard let cellType = registeredCells[identifier]
+            else { fatalError("Unregistered cell identifier: \(identifier)") }
         
-        return cell
+        // get cell from reusable cell pool
+        if let (indexPath, reusableCell) = adapter.reusableCell,
+            reusableCell.reuseIdentifier == identifier,
+            indexPath == indexPath {
+            
+            assert(type(of: reusableCell) == cellType)
+            
+            // return cell for reuse
+            return reusableCell
+            
+        } else {
+            
+            let cell = cellType.init(reuseIdentifier: identifier)
+            return cell
+        }
     }
     
     /// Returns the table cell at the specified index path.
@@ -224,10 +240,7 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
     internal private(set) weak var tableView: UITableView?
     
     /// Cells ready for reuse
-    internal private(set) var reusableCells = [IndexPath: UITableViewCell]()
-    
-    /// All created cells
-    internal private(set) var cells = Set<UITableViewCell>()
+    internal private(set) var reusableCell: (indexPath: IndexPath, cell: UITableViewCell)?
     
     internal private(set) var visibleCells = [IndexPath: UITableViewCell]()
     
@@ -246,41 +259,12 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
     
     override func onCreateViewHolder(parent: Android.View.ViewGroup, viewType: Int?) -> AndroidWidgetRecyclerView.ViewHolder {
         
-        guard let tableView = tableView else {
-            fatalError("Missing TableView")
-        }
-        
-        guard let (identifier, cellType) = tableView.registeredCells.first else {
-            fatalError("No cells registered")
-        }
-        
-        // create new cell
-        let cell = cellType.init(reuseIdentifier: identifier)
-        
-        cell.androidView.setOnClickListener {
-            
-            guard let tableView = self.tableView
-                else { assertionFailure("Missing table view"); return }
-            
-            guard let delegate = tableView.delegate
-                else { assertionFailure("Missing delegate"); return }
-            
-            guard let indexPath = self.indexPaths[cell.viewHolder.adapterPosition]
-                else { assertionFailure("Missing indexpath"); return  }
-            
-            delegate.tableView(tableView, didSelectRowAt: indexPath)
-        }
-        
-        // hold strong reference to cell
-        self.cells.insert(cell)
-        
-        // return Android view
-        return cell.viewHolder
+        return UITableView.ViewHolder()
     }
     
     override func onBindViewHolder(holder: AndroidWidgetRecyclerView.ViewHolder, position: Int) {
         
-        guard let viewHolder = holder as? UITableViewCellViewHolder
+        guard let viewHolder = holder as? UITableView.ViewHolder
             else { fatalError("Invalid view holder \(holder)") }
         
         // configure cell
@@ -293,39 +277,59 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
         guard let delegate = tableView.delegate
             else { assertionFailure("Missing delegate"); return }
         
-        guard let cell = viewHolder.cell
-            else { assertionFailure("Missing cell"); return }
-        
-        // FIXME: Convert position to indexPath, support multiple sections
-        
         guard let indexPath = indexPaths[position]
             else { assertionFailure("Missing IndexPath in the postion: \(position)"); return }
         
+        viewHolder.contentView.androidView.setOnClickListener { [weak viewHolder] in
+            
+            guard let viewHolder = viewHolder
+                else { assertionFailure("View Holder released"); return }
+            
+            guard let tableView = self.tableView
+                else { assertionFailure("Missing table view"); return }
+            
+            guard let delegate = tableView.delegate
+                else { assertionFailure("Missing delegate"); return }
+            
+            guard let indexPath = self.indexPaths[viewHolder.adapterPosition]
+                else { assertionFailure("Missing indexpath"); return  }
+            
+            delegate.tableView(tableView, didSelectRowAt: indexPath)
+        }
+        
         // add cell to reusable queue
-        self.reusableCells[indexPath] = cell
+        if let reusableCell = viewHolder.cell {
+            self.reusableCell = (indexPath, reusableCell)
+        }
+        
+        defer { self.reusableCell = nil }
         
         if indexPath.row == headerIndex {
             
             if let headerView = delegate.tableView(tableView, viewForHeaderInSection: indexPath.section)?.androidView {
                 
-                cell.addCHildView(view: headerView)
+                viewHolder.addChildView(headerView)
+                
+            } else {
+                
+                viewHolder.contentView.androidView.removeAllViews()
             }
+            
         } else {
             
             // data source should use `dequeueCell` to get an existing cell
-            let returnedCell = dataSource.tableView(tableView, cellForRowAt: indexPath)
+            let cell = dataSource.tableView(tableView, cellForRowAt: indexPath)
             
-            // should not create new cells constantly
-            assert(returnedCell === cell)
+            if cell !== viewHolder.cell {
+                
+                viewHolder.cell = cell
+                viewHolder.addChildView(cell.androidView)
+            }
+            
+            // mark as visible
+            self.visibleCells = self.visibleCells.filter({ $0.value !== cell })
+            self.visibleCells[indexPath] = cell
         }
-        
-        // not reusable anymore
-        self.reusableCells[indexPath] = nil
-        
-        // mark as visible
-        self.visibleCells = self.visibleCells.filter({ $0.value !== cell })
-        
-        self.visibleCells[indexPath] = cell
     }
     
     override func getItemCount() -> Int {
@@ -342,21 +346,21 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
         
         let sections = dataSource.numberOfSections(in: tableView)
         
-        if(sections == 1) {
+        if sections == 1 {
             
-            for row in 0..<dataSource.tableView(tableView, numberOfRowsInSection: 0){
+            for row in 0 ..< dataSource.tableView(tableView, numberOfRowsInSection: 0) {
                 
                 indexPaths[count] = IndexPath(row: row, in: 0)
                 count = count + 1
             }
         } else {
             
-            for section in 0..<sections {
+            for section in 0 ..< sections {
                 
                 indexPaths[count] = IndexPath(row: headerIndex, in: section)
                 count = count + 1
                 
-                for row in 0..<dataSource.tableView(tableView, numberOfRowsInSection: section){
+                for row in 0 ..< dataSource.tableView(tableView, numberOfRowsInSection: section) {
                     
                     indexPaths[count] = IndexPath(row: row, in: section)
                     count = count + 1
@@ -368,18 +372,36 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
     }
 }
 
-internal struct UITableViewCellCache {
+internal extension UITableView {
     
-    let cell: UITableViewCell
-    
-    var indexPath: IndexPath?
-    
-    init(_ cell: UITableViewCell) {
+    internal class ViewHolder: Android.Widget.RecyclerView.ViewHolder {
         
-        self.cell = cell
-        self.indexPath = nil
+        public lazy var contentView: UIView = UIView(frame: CGRect(origin: .zero, size: UITableViewCell.defaultSize))
+        
+        /// Reference to cell (used for configuration)
+        var cell: UITableViewCell?
+        
+        public init() {
+            
+            super.init(javaObject: nil)
+            self.bindNewJavaObject(itemView: self.contentView.androidView)
+        }
+        
+        required init(javaObject: jobject?) {
+            super.init(javaObject: javaObject)
+        }
+        
+        /// Add Android child view.
+        public func addChildView(_ view: AndroidView) {
+            
+            contentView.androidView.removeAllViews()
+            contentView.androidView.layoutParams = view.layoutParams
+            contentView.androidView.addView(view)
+        }
     }
 }
+
+
 
 // MARK: - Supporting Types
 
