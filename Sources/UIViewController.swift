@@ -104,7 +104,9 @@ open class UIViewController: UIResponder {
         if isViewLoaded == false {
             
             loadView()
+            viewWillAppear(false)
             viewDidLoad()
+            viewDidAppear(false)
         }
     }
     
