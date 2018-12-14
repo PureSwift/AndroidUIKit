@@ -17,6 +17,7 @@ open class UIViewController: UIResponder {
     // MARK: - Configuring a View Controller Using Nib Files
     
     internal var androidAlertDialog: AndroidAlertDialog?
+    internal var androidFileManager: AndroidFileManager?
     
     /// The tab bar item that represents the view controller when added to a tab bar controller.
     public var tabBarItem: UITabBarItem!
@@ -370,5 +371,14 @@ open class UIViewController: UIResponder {
             
             // present VC modally
         }
+    }
+    
+    open func dismiss(animated: Bool, completion: (() -> ())?){
+        
+        androidAlertDialog?.dismiss()
+        androidAlertDialog = nil
+        
+        androidFileManager?.dismiss()
+        androidFileManager = nil
     }
 }

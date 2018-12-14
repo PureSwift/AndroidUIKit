@@ -96,13 +96,6 @@ public enum UIAlertActionStyle {
 
 public extension UIViewController {
     
-    
-    public func dismiss(animated: Bool, completion: (() -> ())?){
-        
-        androidAlertDialog?.dismiss()
-        androidAlertDialog = nil
-    }
-    
     public func present(_ alertController: UIAlertController, animated: Bool, completion: (() -> ())? = nil){
         alertController.presentingViewController = self
         
