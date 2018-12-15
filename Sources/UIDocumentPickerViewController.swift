@@ -14,7 +14,7 @@ import java_util
 /// A view controller that provides access to documents or destinations outside your app’s sandbox.
 public class UIDocumentPickerViewController {
     
-    public var delegate: UIDocumentPickerDelegate?
+    public weak var delegate: UIDocumentPickerDelegate?
     public var allowsMultipleSelection: Bool = false
     
     fileprivate var documentPickerMode: UIDocumentPickerMode
@@ -46,9 +46,7 @@ public class UIDocumentPickerViewController {
 // Mark: - UIDocumentPickerDelegate
 
 /// A set of methods that you implement to track when the user selects a document or destination, or to track when the operation is canceled.
-public protocol UIDocumentPickerDelegate {}
-
-public extension UIDocumentPickerDelegate {
+public protocol UIDocumentPickerDelegate: class {
     
     /// Tells the delegate that the user has selected one or more documents.
     /// Parameters
