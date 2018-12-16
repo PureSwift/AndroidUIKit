@@ -53,10 +53,18 @@ public protocol UIDocumentPickerDelegate: class {
     /// controller: The document picker that called this method.
     // urls: The URLs of the selected documents.
     func documentPicker(_ controller: UIDocumentPickerViewController,
-                        didPickDocumentsAt urls: [URL]) {}
+                        didPickDocumentsAt urls: [URL])
     
     /// Tells the delegate that the user canceled the document picker.
-    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController){}
+    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController)
+}
+
+public extension UIDocumentPickerDelegate {
+    
+    func documentPicker(_ controller: UIDocumentPickerViewController,
+                        didPickDocumentsAt urls: [URL]) { }
+    
+    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) { }
 }
 
 // Mark: - UIDocumentPickerMode
