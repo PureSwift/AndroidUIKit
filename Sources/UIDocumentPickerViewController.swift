@@ -90,11 +90,6 @@ public extension UIViewController {
     public func present(_ documentPickerVC: UIDocumentPickerViewController, animated: Bool, completion: (() -> ())? = nil){
         
         self.androidFileManager = AndroidFileManager(documentPickerVC)
-        self.androidFileManager?.listener = { path in
-            
-            //FIXME
-            documentPickerVC.delegate?.documentPicker(documentPickerVC, didPickDocumentsAt: [URL.init(fileURLWithPath: path)])
-        }
         self.androidFileManager?.show()
     }
 }
@@ -116,8 +111,6 @@ internal class AndroidFileManager {
     private var selectedFile: Item?
     private var currentFolder = ""
     private var navigation = [Navigation]()
-    
-    public var listener: ( (String) ->() )?
     
     public init(_ documentPickerVC: UIDocumentPickerViewController) {
         
@@ -169,19 +162,40 @@ internal class AndroidFileManager {
         
         btnOk?.setOnClickListener {
             
-            let path: String?
+            var urls : [URL] = []
             
-            if self.selectedFile != nil {
+            if documentPickerVC.allowsMultipleSelection {
                 
-                path = self.selectedFile?.path
+                guard self.adapter.checkedItems.count > 0 else {
+                    
+                    self.documentPickerVC.delegate?.documentPicker(documentPickerVC, didPickDocumentsAt: [])
+                    
+                    return
+                }
+                
+                self.adapter.checkedItems.forEach {item in
+                    
+                    urls.append(URL(fileURLWithPath: item.path))
+                }
             } else {
                 
-                path = self.navigation.last?.path
+                let path: String
+                
+                if let selectedFile = self.selectedFile {
+                    
+                    path = selectedFile.path
+                } else {
+                    
+                    guard let lastNavigation = self.navigation.last
+                        else { return }
+                    
+                    path = lastNavigation.path
+                }
+                
+                urls.append(URL(fileURLWithPath: path))
             }
             
-            NSLog("paht: \(path!)")
-            
-            self.listener?(path!)
+            self.documentPickerVC.delegate?.documentPicker(documentPickerVC, didPickDocumentsAt: urls)
             
             self.dismiss()
         }
@@ -293,7 +307,18 @@ internal class AndroidFileManager {
     
     private func settingsAdapter(){
         
-        adapter.checkItem = { isChecked, item in
+        adapter.multiSelectCheckItems = { isThereItems in
+            
+            if(isThereItems){
+                
+                self.btnOk?.text = "SELECT FILES"
+            } else {
+                
+                self.btnOk?.text = "SELECT FOLDER"
+            }
+        }
+        
+        adapter.singleSelectCheckItem = { isChecked, item in
             
             NSLog("Checkbox checked \(isChecked): \(item.name).")
             
@@ -442,7 +467,7 @@ fileprivate class Navigation {
 fileprivate class Item {
     
     public let type: ItemType
-    public let path: String
+    public var path: String
     public let name: String
     public var selected: Bool
     
@@ -458,9 +483,12 @@ fileprivate class ItemAdapter: Android.Widget.RecyclerView.Adapter {
     
     private var items = [Item]()
     public var itemClick: ((Item) -> ())?
-    public var checkItem: ((Bool, Item) -> ())?
+    public var singleSelectCheckItem: ((Bool, Item) -> ())?
+    public var multiSelectCheckItems: ((Bool) -> ())?
+    public var checkedItems : [Item] = []
     
     private var lastCheckedPosition = -1
+    
     private var documentPickerVC: UIDocumentPickerViewController!
     
     public required init(javaObject: jobject?) {
@@ -479,6 +507,7 @@ fileprivate class ItemAdapter: Android.Widget.RecyclerView.Adapter {
     
     public func addItems(items: [Item]){
         
+        self.checkedItems.removeAll()
         self.items.removeAll()
         
         self.items = items
@@ -547,7 +576,28 @@ fileprivate class ItemAdapter: Android.Widget.RecyclerView.Adapter {
         itemViewHolder.cbSelect?.setOnCheckedChangeListener { buttonView, isChecked in
             
             item.selected = isChecked
-            self.checkItem?(isChecked, item)
+            
+            if self.documentPickerVC.allowsMultipleSelection {
+                
+                self.notifyItemChanged(position: self.lastCheckedPosition)
+                
+                if isChecked {
+                    
+                    self.checkedItems.append(item)
+                } else {
+                    
+                    if let index = self.checkedItems.index(where: { $0.path == item.path}) {
+                        
+                        self.checkedItems.remove(at: index)
+                    }
+                }
+                
+                self.multiSelectCheckItems?(self.checkedItems.count > 0)
+                
+                return
+            }
+            
+            self.singleSelectCheckItem?(isChecked, item)
             
             if self.lastCheckedPosition != -1 && self.lastCheckedPosition != position {
                 
