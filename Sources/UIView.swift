@@ -114,10 +114,8 @@ open class UIView: UIResponder {
     /// The value of this property reflects the state of the receiver only
     /// and does not account for the state of the receiver’s ancestors in the view hierarchy.
     /// Thus this property can be false but the receiver may still be hidden if an ancestor is hidden.
-    public final var isHidden: Bool = false { didSet {
-        //setNeedsDisplay()
-        isHidden ? androidView.setVisibility(visibility: AndroidView.AndroidViewVisibility.invisible.rawValue) : androidView.setVisibility(visibility: AndroidView.AndroidViewVisibility.visible.rawValue)
-        }
+    public final var isHidden: Bool = false {
+        didSet { androidView.visibility = isHidden ? .invisible : .visible }
     }
     
     /// The view’s alpha value.

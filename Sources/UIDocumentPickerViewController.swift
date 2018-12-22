@@ -203,7 +203,7 @@ internal class AndroidFileManager {
     
     private func settingsAddFolderButton() {
         
-        ivAddFolder?.setVisibility(visibility: AndroidView.AndroidViewVisibility.invisible.rawValue)
+        ivAddFolder?.visibility = .invisible
         
         ivAddFolder?.setOnClickListener {
             
@@ -274,7 +274,7 @@ internal class AndroidFileManager {
     
     private func settingsBackButton() {
         
-        ivBack?.setVisibility(visibility: AndroidView.AndroidViewVisibility.invisible.rawValue)
+        ivBack?.visibility = .invisible
         
         ivBack?.setOnClickListener {
             
@@ -290,8 +290,8 @@ internal class AndroidFileManager {
             
             if self.navigation.count == 1 {
                 
-                self.ivBack?.setVisibility(visibility: AndroidView.AndroidViewVisibility.invisible.rawValue)
-                self.ivAddFolder?.setVisibility(visibility: AndroidView.AndroidViewVisibility.invisible.rawValue)
+                self.ivBack?.visibility = .invisible
+                self.ivAddFolder?.visibility = .invisible
                 self.currentFolder = "Storages list"
                 
                 self.btnOk?.setEnabled(enabled: false)
@@ -347,11 +347,11 @@ internal class AndroidFileManager {
             self.tvCurrentFolder?.text = self.currentFolder
             self.adapter.addItems(items: itemChildren)
             
-            self.ivBack?.setVisibility(visibility: AndroidView.AndroidViewVisibility.visible.rawValue)
+            self.ivBack?.visibility = .visible
             
             if self.documentPickerVC.documentPickerMode == .exportToService || self.documentPickerVC.documentPickerMode == .moveToService {
                 
-                self.ivAddFolder?.setVisibility(visibility: AndroidView.AndroidViewVisibility.visible.rawValue)
+                self.ivAddFolder?.visibility = .visible
             }
         }
     }
@@ -669,11 +669,11 @@ fileprivate class ItemAdapter: Android.Widget.RecyclerView.Adapter {
             switch item.type {
             case .storage:
                 
-                self.cbSelect?.setVisibility(visibility: AndroidView.AndroidViewVisibility.gone.rawValue)
+                self.cbSelect?.visibility = .gone
                 imageId = UIApplication.shared.androidActivity.getIdentifier(name: "ic_sd_storage", type: "drawable")
             case .folder:
                 
-                self.cbSelect?.setVisibility(visibility: AndroidView.AndroidViewVisibility.gone.rawValue)
+                self.cbSelect?.visibility = .gone
                 imageId = UIApplication.shared.androidActivity.getIdentifier(name: "ic_folder", type: "drawable")
             case .file:
                 
@@ -689,7 +689,7 @@ fileprivate class ItemAdapter: Android.Widget.RecyclerView.Adapter {
                 
                 guard let extensions = documentPickerVC.documentTypes else {
                     
-                    self.cbSelect?.setVisibility(visibility: AndroidView.AndroidViewVisibility.visible.rawValue)
+                    self.cbSelect?.visibility = .visible
                     self.cbSelect?.setChecked(item.selected)
                     
                     return
@@ -697,7 +697,7 @@ fileprivate class ItemAdapter: Android.Widget.RecyclerView.Adapter {
                 
                 guard extensions.count > 0 else {
                     
-                    self.cbSelect?.setVisibility(visibility: AndroidView.AndroidViewVisibility.visible.rawValue)
+                    self.cbSelect?.visibility = .visible
                     self.cbSelect?.setChecked(item.selected)
                     
                     return
@@ -709,12 +709,12 @@ fileprivate class ItemAdapter: Android.Widget.RecyclerView.Adapter {
                 
                 if itemIsAllowsToBeSelected {
                     
-                    self.cbSelect?.setVisibility(visibility: AndroidView.AndroidViewVisibility.visible.rawValue)
+                    self.cbSelect?.visibility = .visible
                     self.cbSelect?.setChecked(item.selected)
                     
                 } else {
                     
-                    self.cbSelect?.setVisibility(visibility: AndroidView.AndroidViewVisibility.gone.rawValue)
+                    self.cbSelect?.visibility = .gone
                 }
             }
         }
