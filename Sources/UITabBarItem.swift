@@ -26,7 +26,7 @@ open class UITabBarItem: UIBarItem {
     
     public var badgeColor: UIColor?
     
-    internal var position: Int = -1
+    internal var position: Int = 0
     
     public override init() {
         super.init()
@@ -43,7 +43,7 @@ open class UITabBarItem: UIBarItem {
     }
     
     /// Creates and returns a new item using the specified properties.
-    public convenience init(title: String?, image: UIImage?, tag: Int){
+    public convenience init(title: String?, image: UIImage?, tag: Int = -1) {
         
         self.init()
         self.title = title
@@ -53,7 +53,7 @@ open class UITabBarItem: UIBarItem {
     }
     
     /// Creates and returns a new item with the specified title, unselected image, and selected image.
-    public convenience init(title: String?, image: UIImage?, selectedImage: UIImage?){
+    public convenience init(title: String?, image: UIImage?, selectedImage: UIImage?) {
         
         self.init()
         self.title = title
@@ -105,4 +105,3 @@ public extension UITabBarItem {
         case mostViewed = 11
     }
 }
-
