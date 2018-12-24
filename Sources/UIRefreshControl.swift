@@ -12,9 +12,16 @@ open class UIRefreshControl: UIControl {
     
     internal lazy var androidSwipeRefreshLayout: AndroidSwipeRefreshLayout = {
         
-        let swipeRefreshLayout = AndroidSwipeRefreshLayout.init(context: UIScreen.main.activity)
+        let swipeRefreshLayout = AndroidSwipeRefreshLayout(context: UIScreen.main.activity)
+        
         swipeRefreshLayout.layoutParams = AndroidFrameLayoutLayoutParams(width: AndroidFrameLayoutLayoutParams.WRAP_CONTENT, height: AndroidFrameLayoutLayoutParams.WRAP_CONTENT)
-        //swipeRefreshLayout.setColorSchemeColors(colors: )
+        
+        let refreshControlColor = UIScreen.main.activity.getIdentifier(name: "refreshControlColor", type: "color")
+        
+        if(refreshControlColor != 0) {
+            
+            swipeRefreshLayout.setColorSchemeResources(colors: refreshControlColor)
+        }
         
         return swipeRefreshLayout
     }()
