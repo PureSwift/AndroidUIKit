@@ -252,7 +252,6 @@ public extension UINavigationController {
         
         // add items
         newViewControllers.forEach {
-            NSLog("111 FOREACH: \(type(of: $0))")
             pushViewController($0, animated: animated)
         }
     }
@@ -337,11 +336,9 @@ public extension UINavigationController {
         self.isToolbarHidden = false
         self.setNavigationBarHidden(false, animated: false)
         
-        if( parent is UITabBarController ){
+        if( parent is UITabBarController ) {
             
-            let _tabBarControllerParent = parent as? UITabBarController
-            
-            guard let tabBarControllerParent = _tabBarControllerParent
+            guard let tabBarControllerParent = parent as? UITabBarController
                 else { fatalError("\(type(of: self)) \(#function) tabBarControllerParent is nil") }
             
             tabBarControllerParent.navigationBar.popItem(animated: false)
@@ -400,6 +397,7 @@ extension UINavigationController: UINavigationBarDelegate {
     
     public func navigationBar(_ navigationBar: UINavigationBar, didPush item: UINavigationItem) {
         NSLog("\(type(of: self)) \(#function)")
+        
         
     }
     

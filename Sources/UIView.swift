@@ -403,9 +403,9 @@ open class UIView: UIResponder {
         let newWindow = self.window
         
         // remove from previous superview
-        if view.superview !== self {
-            view.removeFromSuperview()
-        }
+        //if view.superview !== self {
+        view.removeFromSuperview()
+        //}
         
         // store subview in array
         body(&subviews, view)
@@ -431,6 +431,7 @@ open class UIView: UIResponder {
             NSLog("\((type: self)) \(#function) not by addViewByIndex")
             androidView.addView(view.androidView)
         }
+        
         // inform
         didAddSubview(view)
         // force redraw
@@ -976,6 +977,7 @@ open class UIView: UIResponder {
 // MARK: - Supporting Types
 
 public let UIViewNoIntrinsicMetric: CGFloat = -1.0
+
 
 
 

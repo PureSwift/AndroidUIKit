@@ -38,7 +38,7 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
     
     internal lazy var navigationBar: UINavigationBar = { [unowned self] in
         
-        let navBar = UINavigationBar.init(frame: .zero)
+        let navBar = UINavigationBar(frame: .zero)
         navBar.delegate = self
         return navBar
         }()
@@ -46,15 +46,15 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
     /// The tab bar view associated with this controller.
     public lazy var tabBar: UITabBar = { [unowned self] in
         
-        let tabBar = UITabBar.init(frame: CGRect(x: 0,
-                                                 y: 0,
-                                                 width: UIApplication.shared.androidActivity.screen.bounds.width,
-                                                 height: 56))
+        let tabBar = UITabBar(frame: CGRect(x: 0,
+                                            y: 0,
+                                            width: UIApplication.shared.androidActivity.screen.bounds.width,
+                                            height: 56))
         tabBar.delegate = self
         return tabBar
         }()
     
-    internal var contentView = UIView.init()
+    internal var contentView = UIView()
     
     /// An array of the root view controllers displayed by the tab bar interface.
     public var viewControllers: [UIViewController]? {
@@ -103,27 +103,41 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
         
         // add new child
         selectedIndex = index
-        selectedViewController = _viewControllers[selectedIndex]
+        self.selectedViewController = _viewControllers[selectedIndex]
         
-        guard let selectedVC = selectedViewController, let view = selectedVC.view
+        guard let selectedVC = self.selectedViewController, let view = selectedVC.view
             else { return }
         
-        NSLog("children count = \(self.children.count)")
+        NSLog("\(type(of: self)) \(#function) index = \(index)")
+        
+        NSLog("\(type(of: self)) \(#function) children count = \(self.children.count)")
         
         self.contentView.addSubview(view)
         
-        if(selectedVC is UINavigationController){
+        navigationBar.items = []
+        
+        if(selectedVC is UINavigationController) {
             
             NSLog("\(type(of: self)) \(#function) viewController is UINavigationController")
             let navViewController = selectedVC as! UINavigationController
             
-            guard let navigationItems = navViewController.navigationBar.items
+            var items: [UINavigationItem] = []
+            
+            navViewController.viewControllers.forEach { viewController in
+                
+                items.append(viewController.navigationItem)
+            }
+            
+            items.removeLast()
+            
+            navigationBar.items = items
+            
+            guard let topViewController = navViewController.topViewController
                 else { return }
             
-            guard let navigationItem = navigationItems.last
-                else { return }
+            NSLog("\(type(of: self)) \(#function) topViewController title: \(topViewController))")
+            navigationBar.pushItem(topViewController.navigationItem, animated: false)
             
-            navigationBar.pushItem(navigationItem, animated: false)
         } else {
             
             NSLog("\(type(of: self)) \(#function) viewController is not UINavigationController")
@@ -133,7 +147,7 @@ open class UITabBarController: UIViewController, UITabBarDelegate {
     
     private var tabBarItems = [UITabBarItem]()
     
-    private func updateTabBar(){
+    private func updateTabBar() {
         NSLog("\(type(of: self)) \(#function) vc.count \(self._viewControllers.count)")
         
         tabBarItems.removeAll()
@@ -306,9 +320,7 @@ extension UITabBarController: UINavigationBarDelegate {
             
             if selectedVC is UINavigationController {
                 
-                let _navViewController = selectedVC as? UINavigationController
-                
-                guard let navViewController = _navViewController
+                guard let navViewController = selectedVC as? UINavigationController
                     else { return }
                 
                 navViewController.popViewController(animated: false)
