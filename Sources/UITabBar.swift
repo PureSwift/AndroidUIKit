@@ -32,6 +32,8 @@ open class UITabBar: UIView {
         
         tabLayout.setSelectedTabIndicatorColor(color: AndroidContextCompat.getColor(context: context, colorRes: tabBarItemSelectedIndicatorColorId))
         
+        tabLayout.setSelectedTabIndicatorHeight(height: Int(4 * UIScreen.main.activity.density))
+        
         return tabLayout
         }()
     
@@ -291,4 +293,3 @@ fileprivate extension UITabBar {
         }
     }
 }
-

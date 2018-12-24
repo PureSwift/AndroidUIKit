@@ -39,7 +39,7 @@ open class UINavigationBar: UIView {
     
     internal private(set) lazy var androidToolbar: AndroidToolbar = { [unowned self] in
         
-        let toolbar = AndroidToolbar.init(context: UIScreen.main.activity)
+        let toolbar = AndroidToolbar(context: UIScreen.main.activity)
         
         //FIXME: toolbar.context?.setTheme(resId: UIScreen.main.activity.getIdentifier(name: "ToolBarStyle", type: "style"))
         toolbar.popupTheme = UIScreen.main.activity.getIdentifier(name: "Light", type: "style")
@@ -47,8 +47,25 @@ open class UINavigationBar: UIView {
         toolbar.title = "AndroidUIKit"
         
         // default background color
-        let colorPrimaryId = UIScreen.main.activity.getIdentifier(name: "colorPrimary", type: "color")
-        toolbar.setBackgroundColor(color: AndroidContextCompat.getColor(context: UIScreen.main.activity, colorRes: colorPrimaryId))
+        
+        var navigationBarColorId = UIScreen.main.activity.getIdentifier(name: "navigationBarColor", type: "color")
+        
+        if (navigationBarColorId == 0){
+            
+            navigationBarColorId = UIScreen.main.activity.getIdentifier(name: "colorPrimary", type: "color")
+        }
+        
+        if(navigationBarColorId != 0){
+            
+            toolbar.setBackgroundColor(color: AndroidContextCompat.getColor(context: UIScreen.main.activity, colorRes: navigationBarColorId))
+        }
+        
+        let navigationBarTitleColor = UIScreen.main.activity.getIdentifier(name: "navigationBarTitleColor", type: "color")
+        
+        if(navigationBarTitleColor != 0){
+            
+            toolbar.setTitleTextColor(color: AndroidContextCompat.getColor(context: UIScreen.main.activity, colorRes: navigationBarTitleColor))
+        }
         
         return toolbar
         }()

@@ -279,16 +279,25 @@ extension UITabBarController: UINavigationBarDelegate {
     private func showDefaultBackButton(androidToolbar: AndroidToolbar) {
         
         let arrowBackId = UIScreen.main.activity.getIdentifier(name: "ic_arrow_back", type: "drawable")
-        let navigationVectorDrawableIcon = AndroidVectorDrawableCompat.create(res:  UIScreen.main.activity.resources!, resId: arrowBackId, theme: nil)
         
-        guard let navigationVectorIcon = navigationVectorDrawableIcon
-            else { return }
+        let navigationBarBackButtonColor = UIScreen.main.activity.getIdentifier(name: "navigationBarBackButtonColor", type: "color")
         
-        var navIconDrawable = navigationVectorIcon as AndroidGraphicsDrawableDrawable
-        navIconDrawable = AndroidDrawableCompat.wrap(drawable: navIconDrawable)
-        AndroidDrawableCompat.setTint(drawable: navIconDrawable, color: AndroidGraphicsColor.BLACK)
-        
-        navigationBar.androidToolbar.navigationIcon = navIconDrawable
+        if ( navigationBarBackButtonColor != 0 ){
+            
+            let navigationVectorDrawableIcon = AndroidVectorDrawableCompat.create(res:  UIScreen.main.activity.resources!, resId: arrowBackId, theme: nil)
+            
+            guard let navigationVectorIcon = navigationVectorDrawableIcon
+                else { return }
+            
+            var navIconDrawable = navigationVectorIcon as AndroidGraphicsDrawableDrawable
+            navIconDrawable = AndroidDrawableCompat.wrap(drawable: navIconDrawable)
+            AndroidDrawableCompat.setTint(drawable: navIconDrawable, color: AndroidContextCompat.getColor(context: UIScreen.main.activity, colorRes: navigationBarBackButtonColor))
+            
+            navigationBar.androidToolbar.navigationIcon = navIconDrawable
+        } else {
+            
+            navigationBar.androidToolbar.setNavigationIcon(resId: arrowBackId)
+        }
         
         navigationBar.androidToolbar.setNavigationOnClickListener {
             
