@@ -280,23 +280,6 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
         guard let indexPath = indexPaths[position]
             else { assertionFailure("Missing IndexPath in the postion: \(position)"); return }
         
-        viewHolder.contentView.androidView.setOnClickListener { [weak viewHolder] in
-            
-            guard let viewHolder = viewHolder
-                else { assertionFailure("View Holder released"); return }
-            
-            guard let tableView = self.tableView
-                else { assertionFailure("Missing table view"); return }
-            
-            guard let delegate = tableView.delegate
-                else { assertionFailure("Missing delegate"); return }
-            
-            guard let indexPath = self.indexPaths[viewHolder.adapterPosition]
-                else { assertionFailure("Missing indexpath"); return  }
-            
-            delegate.tableView(tableView, didSelectRowAt: indexPath)
-        }
-        
         // add cell to reusable queue
         if let reusableCell = viewHolder.cell {
             self.reusableCell = (indexPath, reusableCell)
@@ -316,6 +299,23 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
             }
             
         } else {
+            
+            viewHolder.contentView.androidView.setOnClickListener { [weak viewHolder] in
+                
+                guard let viewHolder = viewHolder
+                    else { assertionFailure("View Holder released"); return }
+                
+                guard let tableView = self.tableView
+                    else { assertionFailure("Missing table view"); return }
+                
+                guard let delegate = tableView.delegate
+                    else { assertionFailure("Missing delegate"); return }
+                
+                guard let indexPath = self.indexPaths[viewHolder.adapterPosition]
+                    else { assertionFailure("Missing indexpath"); return  }
+                
+                delegate.tableView(tableView, didSelectRowAt: indexPath)
+            }
             
             // data source should use `dequeueCell` to get an existing cell
             let cell = dataSource.tableView(tableView, cellForRowAt: indexPath)
