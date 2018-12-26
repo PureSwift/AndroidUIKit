@@ -195,7 +195,6 @@ final public class UITableView: UIView {
     /// - Returns: An object representing a cell of the table,
     /// or `nil` if the cell is not visible or `indexPath` is out of range.
     public func cellForRow(at indexPath: IndexPath) -> UITableViewCell? {
-        
         return adapter?.visibleCells[indexPath]
     }
     
@@ -203,7 +202,6 @@ final public class UITableView: UIView {
     ///
     /// - Returns: An index path representing the row and section of the cell, or nil if the index path is invalid.
     public func indexPath(for cell: UITableViewCell) -> IndexPath? {
-        
         return adapter?.visibleCells.first(where: { $0.value === cell })?.key
     }
     
@@ -316,15 +314,14 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
                 
                 delegate.tableView(tableView, didSelectRowAt: indexPath)
             }
-            
             // data source should use `dequeueCell` to get an existing cell
             let cell = dataSource.tableView(tableView, cellForRowAt: indexPath)
             
-            if cell !== viewHolder.cell {
-                
-                viewHolder.cell = cell
-                viewHolder.addChildView(cell.androidView)
-            }
+            //if cell !== viewHolder.cell {
+            
+            viewHolder.cell = cell
+            viewHolder.addChildView(cell.androidView)
+            //}
             
             // mark as visible
             self.visibleCells = self.visibleCells.filter({ $0.value !== cell })
@@ -367,7 +364,6 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
                 }
             }
         }
-        
         return count
     }
 }
@@ -393,7 +389,7 @@ internal extension UITableView {
         
         /// Add Android child view.
         public func addChildView(_ view: AndroidView) {
-            
+            NSLog("ClimateConfig: \(type(of: self)) - \(#function)")
             contentView.androidView.removeAllViews()
             contentView.androidView.layoutParams = view.layoutParams
             contentView.androidView.addView(view)
