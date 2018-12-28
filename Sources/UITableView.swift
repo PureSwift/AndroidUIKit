@@ -103,6 +103,7 @@ final public class UITableView: UIView {
             else { fatalError("Missing Android RecyclerView") }
         
         recyclerView.layoutManager = AndroidWidgetRecyclerViewLinearLayoutManager(context: context)
+        recyclerView.addItemDecoration(AndroidDividerItemDecoration(context: context, orientation: AndroidDividerItemDecoration.VERTICAL))
         updateRecyclerViewFrame()
         
         androidView.addView(recyclerView)
