@@ -21,6 +21,8 @@ public class UIDocumentPickerViewController {
     fileprivate var documentTypes: [String]?
     fileprivate var urls = [URL]()
     
+    fileprivate var androidFileManager: AndroidFileManager?
+    
     /// Initializes and returns a document picker that can import or open the given file types.
     public init(documentTypes: [String], in documentPickerMode: UIDocumentPickerMode){
         
@@ -40,6 +42,12 @@ public class UIDocumentPickerViewController {
         
         self.urls = urls
         self.documentPickerMode = documentPickerMode
+    }
+    
+    open func dismiss(animated: Bool, completion: (() -> ())?){
+        
+        androidFileManager?.dismiss()
+        androidFileManager = nil
     }
 }
 
@@ -90,6 +98,7 @@ public extension UIViewController {
     public func present(_ documentPickerVC: UIDocumentPickerViewController, animated: Bool, completion: (() -> ())? = nil){
         
         self.androidFileManager = AndroidFileManager(documentPickerVC)
+        documentPickerVC.androidFileManager = androidFileManager
         self.androidFileManager?.show()
     }
 }
