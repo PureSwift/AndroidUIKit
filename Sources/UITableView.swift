@@ -81,7 +81,9 @@ final public class UITableView: UIView {
     fileprivate var adapter: UITableViewRecyclerViewAdapter?
     
     // only assigned once
-    internal var recyclerView: AndroidWidgetRecyclerView!
+    public var recyclerView: AndroidWidgetRecyclerView!
+    
+    internal var recyclerViewDivider: AndroidDividerItemDecoration!
     
     // MARK: - Initialization
     
@@ -102,8 +104,10 @@ final public class UITableView: UIView {
         guard let recyclerView = recyclerView
             else { fatalError("Missing Android RecyclerView") }
         
+        recyclerViewDivider = AndroidDividerItemDecoration(context: context, orientation: AndroidDividerItemDecoration.VERTICAL)
+        
         recyclerView.layoutManager = AndroidWidgetRecyclerViewLinearLayoutManager(context: context)
-        recyclerView.addItemDecoration(AndroidDividerItemDecoration(context: context, orientation: AndroidDividerItemDecoration.VERTICAL))
+        recyclerView.addItemDecoration(recyclerViewDivider)
         updateRecyclerViewFrame()
         
         androidView.addView(recyclerView)
@@ -211,6 +215,11 @@ final public class UITableView: UIView {
     private func loadAdapter() {
         
         self.adapter?.notifyDataSetChanged()
+    }
+    
+    public func removeAndroidRecyclerViewDivider() {
+        
+        recyclerView.removeItemDecoration(recyclerViewDivider)
     }
 }
 
