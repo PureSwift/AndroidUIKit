@@ -108,7 +108,7 @@ public extension UIViewController {
             androidAlertDialogBuilder.setTitle(title: alertController.title!)
         }
         
-        if(alertController.actions.count > 3){
+        if(alertController.actions.count > 2){
             createCustomAlertDialog(alertController, androidAlertDialogBuilder)
         }else{
             createNormalAlertDialog(alertController, androidAlertDialogBuilder)
