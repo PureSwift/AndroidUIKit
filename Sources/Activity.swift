@@ -77,6 +77,19 @@ public final class AndroidUIKitMainActivity: SwiftSupportAppCompatActivity {
         app.delegate?.applicationDidEnterBackground(app)
     }
     
+    internal var backButtonAction: ( () -> () )?
+    
+    public override func onBackPressed() {
+        
+        if let action = backButtonAction {
+            
+            action()
+        } else {
+            
+            finish()
+        }
+    }
+    
     public override func onActivityResult(requestCode: Int, resultCode: Int, data: Android.Content.Intent?) {
         
         let app = UIApplication.shared

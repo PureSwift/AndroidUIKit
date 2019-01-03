@@ -127,25 +127,27 @@ public final class UIApplication: UIResponder {
     
     private var isRunningInTaskSwitcher: Bool = false
     /*
-    public override func wheelChanged(with event: UIWheelEvent) {
-        
-        super.wheelChanged(with: event)
-    }
-    
-    internal func sendButtonEvent(with pressInfo: UIPressInfo) {
-        
-        
-    }
-    
-    internal func handlePhysicalButtonEvent(_ event: UIPhysicalKeyboardEvent) {
-        
-        
-    }
-    */
+     public override func wheelChanged(with event: UIWheelEvent) {
+     
+     super.wheelChanged(with: event)
+     }
+     
+     internal func sendButtonEvent(with pressInfo: UIPressInfo) {
+     
+     
+     }
+     
+     internal func handlePhysicalButtonEvent(_ event: UIPhysicalKeyboardEvent) {
+     
+     
+     }
+     */
     public override func becomeFirstResponder() -> Bool {
         
         return keyWindow?.becomeFirstResponder() ?? false
     }
+    
+    
 }
 
 // MARK: - Supporting Types

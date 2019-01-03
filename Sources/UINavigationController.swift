@@ -406,6 +406,7 @@ extension UINavigationController: UINavigationBarDelegate {
         
         if(item.backBarButtonItem == nil && !item.hidesBackButton){
             navigationBar.androidToolbar.navigationIcon = nil
+            UIApplication.shared.androidActivity.backButtonAction = nil
         }
         
         return true
@@ -446,8 +447,13 @@ extension UINavigationController: UINavigationBarDelegate {
             navigationBar.androidToolbar.setNavigationIcon(resId: arrowBackId)
         }
         
-        navigationBar.androidToolbar.setNavigationOnClickListener {
-            self.popViewController(animated: false)
+        navigationBar.androidToolbar.setNavigationOnClickListener { [weak self] in
+            self?.popViewController(animated: false)
+        }
+        
+        UIApplication.shared.androidActivity.backButtonAction = { [weak self] in
+            
+            self?.popViewController(animated: false)
         }
     }
 }

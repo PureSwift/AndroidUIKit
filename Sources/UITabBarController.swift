@@ -259,6 +259,7 @@ extension UITabBarController: UINavigationBarDelegate {
         }
         
         navigationBar.androidToolbar.navigationIcon = nil
+        UIApplication.shared.androidActivity.backButtonAction = nil
         
         return true
     }
@@ -273,6 +274,7 @@ extension UITabBarController: UINavigationBarDelegate {
         
         if(item.backBarButtonItem == nil && !item.hidesBackButton){
             navigationBar.androidToolbar.navigationIcon = nil
+            UIApplication.shared.androidActivity.backButtonAction = nil
         }
         
         return true
@@ -313,18 +315,28 @@ extension UITabBarController: UINavigationBarDelegate {
             navigationBar.androidToolbar.setNavigationIcon(resId: arrowBackId)
         }
         
-        navigationBar.androidToolbar.setNavigationOnClickListener {
+        navigationBar.androidToolbar.setNavigationOnClickListener { [weak self] in
             
-            guard let selectedVC = self.selectedViewController
+            self?.navigationPopViewController()
+        }
+        
+        UIApplication.shared.androidActivity.backButtonAction = { [weak self] in
+            
+            self?.navigationPopViewController()
+        }
+    }
+    
+    private func navigationPopViewController() {
+        
+        guard let selectedVC = self.selectedViewController
+            else { return }
+        
+        if selectedVC is UINavigationController {
+            
+            guard let navViewController = selectedVC as? UINavigationController
                 else { return }
             
-            if selectedVC is UINavigationController {
-                
-                guard let navViewController = selectedVC as? UINavigationController
-                    else { return }
-                
-                navViewController.popViewController(animated: false)
-            }
+            navViewController.popViewController(animated: false)
         }
     }
 }
