@@ -35,8 +35,6 @@ open class UIView: UIResponder {
         assert(androidView.javaObject != nil, "Android View not initialized")
         
         self.frame = frame
-        
-        //self.updateAndroidView()
     }
     
     public convenience init(androidViewChild: AndroidView){
@@ -977,7 +975,3 @@ open class UIView: UIResponder {
 // MARK: - Supporting Types
 
 public let UIViewNoIntrinsicMetric: CGFloat = -1.0
-
-
-
-
