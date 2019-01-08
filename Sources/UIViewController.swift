@@ -375,6 +375,15 @@ open class UIViewController: UIResponder {
         }
     }
     
+    func present(_ viewController: UISearchController, animated: Bool, completion: (() -> Void)? = nil){
+        
+        viewController.delegate?.willPresentSearchController(viewController)
+        
+        viewController.delegate?.presentSearchController(viewController)
+        
+        viewController.delegate?.didPresentSearchController(viewController)
+    }
+    
     open func dismiss(animated: Bool, completion: (() -> ())?){
         
         androidAlertDialog?.dismiss()

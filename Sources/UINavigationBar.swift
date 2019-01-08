@@ -104,6 +104,13 @@ open class UINavigationBar: UIView {
         }
     }
     
+    private func addSearchController(_ searchController: UISearchController){
+        
+        let menuItem = androidToolbar.menu.add(groupId: 0, itemId: AndroidViewCompat.generateViewId(), order: 1, title: searchController.searchBar.prompt ?? "")
+        menuItem.setShowAsAction(action: AndroidMenuItemForward.ShowAsAction.always)
+        menuItem.actionView = searchController.searchBar.androidSearchView
+    }
+    
     private func updateAndroidToolbar(){
         
         guard let item = _navigationStack.last
@@ -113,6 +120,11 @@ open class UINavigationBar: UIView {
         androidToolbar.title = item.title ?? ""
         
         androidToolbar.menu.clear()
+        
+        if let searchController = item.searchController {
+            
+            addSearchController(searchController)
+        }
         
         if item.leftBarButtonItem != nil {
             

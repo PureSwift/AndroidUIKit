@@ -47,6 +47,14 @@ open class UINavigationItem: NSObject {
         
         self.title = title
     }
+    
+    // MARK: Integrating Search Into Your Interface
+    
+    /// The search controller to integrate into your navigation interface.
+    public var searchController: UISearchController?
+    
+    /// A Boolean value indicating whether the integrated search bar is hidden when scrolling any underlying content
+    public var hidesSearchBarWhenScrolling: Bool = false
 }
 
 public extension UINavigationItem {

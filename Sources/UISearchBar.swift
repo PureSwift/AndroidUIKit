@@ -77,12 +77,16 @@ public class UISearchBar: UIView {
     /// A single line of text displayed at the top of the search bar.
     public var prompt: String?
     
+    fileprivate var textWasSettedInternally = false
     /// The current or starting search text.
     public var text: String? {
         
         didSet {
             
-            androidSearchView.setQuery(query: text, submit: false)
+            if !textWasSettedInternally {
+                androidSearchView.setQuery(query: text, submit: false)
+                textWasSettedInternally = false
+            }
         }
     }
     
@@ -249,6 +253,9 @@ internal class SearchViewQueryListener: AndroidSearchViewOnQueryTextListener {
         guard let searchBar = self.searchBar
             else { return false }
         
+        searchBar.textWasSettedInternally = true
+        searchBar.text = newText ?? ""
+        
         searchBar.delegate?.searchBar(searchBar, textDidChange: newText ?? "")
         
         if(isFirstTyping) {
@@ -273,6 +280,7 @@ internal class SearchViewQueryListener: AndroidSearchViewOnQueryTextListener {
         guard let searchBar = self.searchBar
             else { return false }
         
+        searchBar.textWasSettedInternally = true
         searchBar.text = query
         
         searchBar.delegate?.searchBarSearchButtonClicked(searchBar)
