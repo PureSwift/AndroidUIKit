@@ -40,19 +40,19 @@ public class UISearchBar: UIView {
         return searchView
         }()
     
+    public func androidSearchViewExpand(){
+        
+        androidSearchView.onActionViewExpanded()
+    }
+    
     // MARK: Initializing the Search Bar
     
     public override init(frame: CGRect = .zero) {
         super.init(frame: frame)
         
-        backgroundColor = UIColor.green
-        
         androidView.addView(androidSearchView)
-    }
-    
-    override func updateAndroidViewSize() {
         
-        NSLog("xxx updateAndroidViewSize")
+        backgroundColor = UIColor.white
     }
     
     // MARK: Handling Search Bar Interactions
@@ -164,7 +164,7 @@ extension UISearchBarDelegate {
     
     //func searchBar(_ searchBar UISearchBar, shouldChangeTextIn: NSRange, replacementText: String) -> Bool {}
     
-    public func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool { return false }
+    public func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool { return true }
     
     public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) { }
     
@@ -229,6 +229,8 @@ extension UISearchBar {
 internal class SearchViewQueryListener: AndroidSearchViewOnQueryTextListener {
     
     private var searchBar: UISearchBar?
+    private var isFirstTyping = true
+    lazy var workItem = WorkItem()
     
     init(_ searchBar: UISearchBar) {
         
@@ -248,6 +250,21 @@ internal class SearchViewQueryListener: AndroidSearchViewOnQueryTextListener {
             else { return false }
         
         searchBar.delegate?.searchBar(searchBar, textDidChange: newText ?? "")
+        
+        if(isFirstTyping) {
+            
+            searchBar.delegate?.searchBarTextDidBeginEditing(searchBar)
+            isFirstTyping = false
+        }
+        
+        workItem.perform(after: 0.5) { [weak self] in
+            
+            guard let searchBar = self?.searchBar
+                else { return }
+            
+            searchBar.delegate?.searchBarTextDidEndEditing(searchBar)
+            self?.isFirstTyping = true
+        }
         return false
     }
     
@@ -260,5 +277,22 @@ internal class SearchViewQueryListener: AndroidSearchViewOnQueryTextListener {
         
         searchBar.delegate?.searchBarSearchButtonClicked(searchBar)
         return false
+    }
+}
+
+public class WorkItem {
+    
+    private var pendingRequestWorkItem: DispatchWorkItem?
+    
+    func perform(after: TimeInterval, _ block: @escaping () -> () ) {
+        
+        pendingRequestWorkItem?.cancel()
+        
+        // Wrap our request in a work item
+        let requestWorkItem = DispatchWorkItem(block: block)
+        
+        pendingRequestWorkItem = requestWorkItem
+        
+        DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + after, execute: requestWorkItem)
     }
 }
