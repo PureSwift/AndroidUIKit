@@ -45,6 +45,11 @@ public class UISearchBar: UIView {
         androidSearchView.onActionViewExpanded()
     }
     
+    public func androidSearchViewCollapse(){
+        
+        androidSearchView.onActionViewCollapsed()
+    }
+    
     // MARK: Initializing the Search Bar
     
     public override init(frame: CGRect = .zero) {
