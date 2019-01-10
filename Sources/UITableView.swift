@@ -227,16 +227,26 @@ final public class UITableView: UIView {
 
 public protocol UITableViewDataSource: class {
     
+    // MARK: Configuring a Table View
+    
     func numberOfSections(in tableView: UITableView) -> Int // Default is 1 if not implemented
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection: Int) -> String?
+    
+    func tableView(_ tableView: UITableView, titleForFooterInSection: Int) -> String?
 }
 
 public extension UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int { return 1 }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection: Int) -> String? { return nil }
+    
+    func tableView(_ tableView: UITableView, titleForFooterInSection: Int) -> String? { return nil }
 }
 
 // MARK: - Android
@@ -303,7 +313,22 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
                 
             } else {
                 
-                viewHolder.contentView.androidView.removeAllViews()
+                let title = dataSource.tableView(tableView, titleForHeaderInSection: indexPath.section)
+                
+                if indexPath.section > 0 {
+                    
+                    viewHolder.addChildView(generateDefaultHeader(title: title))
+                } else {
+                    
+                    if title != nil {
+                        
+                        viewHolder.addChildView(generateDefaultHeader(title: title))
+                    } else {
+                        
+                        viewHolder.contentView.androidView.removeAllViews()
+                        viewHolder.contentView.androidView.layoutParams = Android.Widget.FrameLayout.FLayoutParams(width: Android.Widget.FrameLayout.FLayoutParams.MATCH_PARENT, height: 0)
+                    }
+                }
             }
             
         } else {
@@ -353,28 +378,46 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
         
         let sections = dataSource.numberOfSections(in: tableView)
         
-        if sections == 1 {
+        for section in 0 ..< sections {
             
-            for row in 0 ..< dataSource.tableView(tableView, numberOfRowsInSection: 0) {
-                
-                indexPaths[count] = IndexPath(row: row, in: 0)
-                count = count + 1
-            }
-        } else {
+            indexPaths[count] = IndexPath(row: headerIndex, in: section)
+            count = count + 1
             
-            for section in 0 ..< sections {
+            for row in 0 ..< dataSource.tableView(tableView, numberOfRowsInSection: section) {
                 
-                indexPaths[count] = IndexPath(row: headerIndex, in: section)
+                indexPaths[count] = IndexPath(row: row, in: section)
                 count = count + 1
-                
-                for row in 0 ..< dataSource.tableView(tableView, numberOfRowsInSection: section) {
-                    
-                    indexPaths[count] = IndexPath(row: row, in: section)
-                    count = count + 1
-                }
             }
         }
+        
         return count
+    }
+    
+    private func generateDefaultHeader(title: String?) -> AndroidView {
+        
+        let layoutName = title != nil ? "cell_header" : "cell_header_space"
+        
+        let peripheralViewLayoutId = UIApplication.shared.androidActivity.getIdentifier(name: layoutName, type: "layout")
+        
+        let layoutInflarer = Android.View.LayoutInflater.from(context: UIApplication.shared.androidActivity)
+        
+        let itemView = layoutInflarer.inflate(resource: Android.R.Layout(rawValue: peripheralViewLayoutId), root: nil, attachToRoot: false)
+        
+        if let title = title {
+            
+            let tvHeaderId = UIApplication.shared.androidActivity.getIdentifier(name: "text_label", type: "id")
+            
+            guard let tvHeaderObject = itemView.findViewById(tvHeaderId)
+                else { fatalError("No view for \(tvHeaderId)") }
+            
+            let tvHeader = Android.Widget.TextView(casting: tvHeaderObject)
+            
+            tvHeader?.text = title
+        }
+        
+        itemView.layoutParams = Android.Widget.FrameLayout.FLayoutParams(width: Android.Widget.FrameLayout.FLayoutParams.MATCH_PARENT, height: Android.Widget.FrameLayout.FLayoutParams.WRAP_CONTENT)
+        
+        return itemView
     }
 }
 

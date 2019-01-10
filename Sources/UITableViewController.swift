@@ -116,6 +116,14 @@ open class UITableViewController: UIViewController, UITableViewDataSource, UITab
         fatalError("\(#function) not implemented")
     }
     
+    open func tableView(_ tableView: UITableView, titleForHeaderInSection: Int) -> String? {
+        return nil
+    }
+    
+    public func tableView(_ tableView: UITableView, titleForFooterInSection: Int) -> String? {
+        return nil
+    }
+    
     open func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) { }
     
     open func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) { }
@@ -173,8 +181,8 @@ open class UITableViewController: UIViewController, UITableViewDataSource, UITab
     open func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) { }
     
     open func tableView(_ tableView: UITableView,
-                   targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath,
-                   toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath {
+                        targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath,
+                        toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath {
         
         return proposedDestinationIndexPath
     }
