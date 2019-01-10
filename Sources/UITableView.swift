@@ -315,7 +315,9 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
                 
                 let title = dataSource.tableView(tableView, titleForHeaderInSection: indexPath.section)
                 
-                if indexPath.section > 0 {
+                let sections = dataSource.numberOfSections(in: tableView)
+                
+                if sections > 1 {
                     
                     viewHolder.addChildView(generateDefaultHeader(title: title))
                 } else {
