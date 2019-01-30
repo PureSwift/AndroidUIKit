@@ -14,6 +14,15 @@ public final class AndroidUIKitMainActivity: SwiftSupportAppCompatActivity {
     
     public lazy var screen: UIScreen = UIScreen.mainScreen(for: self)
     
+    public var reduceHeigthRecyclerView: ( () -> () )?
+    public var enlargeRecyclerView: ( () -> () )?
+    public var keyBoardHeightGotten: ( (Int) -> () )?
+    fileprivate var activityRootView: AndroidView?
+    fileprivate var counter = 0
+    fileprivate var layoutListener: AndroidViewTreeObserver.OnGlobalLayoutListener?
+    fileprivate var r = AndroidRect()
+    fileprivate var wasOpened = false
+    
     public required init(javaObject: jobject?) {
         super.init(javaObject: javaObject)
         
@@ -48,6 +57,8 @@ public final class AndroidUIKitMainActivity: SwiftSupportAppCompatActivity {
         }
         
         drainMainQueue()
+        
+        activityRootView = getActivityRootView()
     }
     
     public override func onResume() {
@@ -55,9 +66,13 @@ public final class AndroidUIKitMainActivity: SwiftSupportAppCompatActivity {
         let app = UIApplication.shared
         app.delegate?.applicationWillEnterForeground(app)
         app.delegate?.applicationDidBecomeActive(app)
+        
+        registerGlobalLayoutListener()
     }
     
     public override func onPause() {
+        
+        unregisterGlobalLayoutListener()
         
         let app = UIApplication.shared
         
@@ -108,6 +123,100 @@ public final class AndroidUIKitMainActivity: SwiftSupportAppCompatActivity {
         #if os(Android)
         CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.01, true)
         #endif
+    }
+    
+    public func showKeyboard(_ view: AndroidView){
+        
+        let imm = UIApplication.shared.androidActivity.systemService(AndroidInputMethodManager.self)
+        imm?.showSoftInput(view: view, flags: AndroidInputMethodManager.SHOW_IMPLICIT)
+    }
+    
+    public func hideKeyboard(_ view: AndroidView){
+        
+        let imm = UIApplication.shared.androidActivity.systemService(AndroidInputMethodManager.self)
+        imm?.hideSoftInputFromWindow(windowToken: view.getWindowToken(), flags: 0)
+    }
+}
+
+fileprivate extension AndroidUIKitMainActivity {
+    
+    fileprivate func registerGlobalLayoutListener() {
+        
+        let softInputMethod = self.window?.attributes?.softInputMode
+        
+        if AndroidWindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE != softInputMethod &&
+            AndroidWindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED != softInputMethod {
+            
+            NSLog("Parameter:activity window SoftInputMethod is not ADJUST_RESIZE")
+            return
+        }
+        
+        layoutListener = AndroidViewTreeObserver.OnGlobalLayoutListener {
+            
+            guard let activityRootView = self.activityRootView
+                else { return }
+            
+            activityRootView.getWindowVisibleDisplayFrame(self.r)
+            
+            let screenHeight = activityRootView.rootView!.getHeight()
+            
+            let heightDiff = screenHeight - self.r.height()
+            //NSLog("rv:: OnGlobalLayoutListener: hd: \(heightDiff) = sh: \(screenHeight) - kh: \(self.r.height())")
+            let isOpen = Double(heightDiff) > ( Double(screenHeight) * 0.15)
+            
+            if isOpen == self.wasOpened {
+                
+                return
+            }
+            
+            self.wasOpened = isOpen
+            
+            if !isOpen {
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.150){
+                    
+                    self.runOnMainThread {
+                        
+                        NSLog("rv:: reduceRecycler returning bigger after 0.150")
+                        self.enlargeRecyclerView?()
+                    }
+                }
+            } else {
+                
+                if self.counter == 0 {
+                    
+                    NSLog("rv:: reduceRecycler: isOpen KBH: \(self.r.height())")
+                    self.keyBoardHeightGotten?(self.r.height())
+                    self.counter = self.counter + 1
+                }
+            }
+            
+            NSLog("rv:: OnGlobalLayoutListener: isOpen: \(isOpen)")
+        }
+        
+        activityRootView?.viewTreeObserver?.addOnGlobalLayoutListener(layoutListener!)
+    }
+    
+    fileprivate func unregisterGlobalLayoutListener() {
+        
+        guard let layoutListener = layoutListener
+            else { return }
+        
+        activityRootView?.viewTreeObserver?.removeGlobalOnLayoutListener(layoutListener)
+    }
+    
+    private func getActivityRootView() -> AndroidView? {
+        
+        guard let resources = resources
+            else { return nil }
+        
+        let contentId = resources.getIdentifier(name: "content", type: "id", defPackage: "android")
+        
+        guard let contentVG = self.findViewById(contentId),
+            let viewGroup = AndroidViewGroup(casting: contentVG)
+            else { return nil }
+        
+        return viewGroup.getChildAt(index: 0)
     }
 }
 

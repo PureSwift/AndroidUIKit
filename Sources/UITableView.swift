@@ -87,6 +87,8 @@ final public class UITableView: UIView {
     
     // MARK: - Initialization
     
+    private var reduceHeigthRecyclerViewCounter = 0
+    
     /// Initializes and returns a table view object having the given frame and style.
     public required init(frame: CGRect, style: UITableViewStyle = .plain) {
         
@@ -112,12 +114,59 @@ final public class UITableView: UIView {
         
         androidView.addView(recyclerView)
         
+        UIApplication.shared.androidActivity.reduceHeigthRecyclerView = {
+            
+            if( self.reduceHeigthRecyclerViewCounter == 0 ){
+                self.reduceHeigthRecyclerViewCounter += 1
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.9){
+                    
+                    UIApplication.shared.androidActivity.runOnMainThread {
+                        
+                        NSLog("rv:: reduceRecycler after 0.9")
+                        self.reduceRecyclerViewSize()
+                    }
+                }
+            } else {
+                
+                NSLog("rv:: reduceRecycler")
+                self.reduceRecyclerViewSize()
+            }
+        }
+        
+        UIApplication.shared.androidActivity.enlargeRecyclerView = {
+            
+            if self.recyclerView.isShown() {
+                
+                if self.recyclerViewHeight > 0 && self.recyclerViewWidth > 0 {
+                    
+                    NSLog("rv:: enlargeRecyclerView h: \(self.recyclerViewHeight) - w: \(self.recyclerViewWidth)")
+                    self.recyclerView?.layoutParams = AndroidFrameLayoutLayoutParams(width: self.recyclerViewWidth, height: self.recyclerViewHeight)
+                }
+            }
+        }
+        
+        UIApplication.shared.androidActivity.keyBoardHeightGotten = { keyBoardHeight in
+            
+            NSLog("rv:: kb h: \(keyBoardHeight)")
+            self.keyBoardHeight = keyBoardHeight
+        }
+        
         let adapter = UITableViewRecyclerViewAdapter(tableView: self)
         
         self.adapter = adapter
         self.recyclerView?.adapter = adapter
         
         self.backgroundColor = .white
+    }
+    
+    
+    
+    private func reduceRecyclerViewSize(){
+        
+        let newHeight = recyclerViewHeight - keyBoardHeight
+        NSLog("rv:: reduceRecyclerViewSize kh= \(keyBoardHeight), rv= \(recyclerViewHeight) and nh: \(newHeight)")
+        recyclerView.layoutParams = AndroidFrameLayoutLayoutParams(width: recyclerViewWidth, height: newHeight)
     }
     
     // MARK: - Methods
@@ -127,6 +176,11 @@ final public class UITableView: UIView {
         
         updateRecyclerViewFrame()
     }
+    
+    fileprivate var counter = 0
+    fileprivate var recyclerViewHeight = 0
+    fileprivate var recyclerViewWidth = 0
+    fileprivate var keyBoardHeight = 0
     
     private func updateRecyclerViewFrame() {
         
@@ -138,6 +192,14 @@ final public class UITableView: UIView {
         // set origin
         recyclerView.setX(x: Float(frameDp.minX))
         recyclerView.setY(y: Float(frameDp.minY))
+        
+        if(Int(frameDp.width) > 0 && Int(frameDp.height) > 0 && counter == 0){
+            
+            recyclerViewHeight = Int(frameDp.height)
+            recyclerViewWidth = Int(frameDp.width)
+            NSLog("rv:: h: \(recyclerViewHeight) - w: \(recyclerViewWidth)")
+            counter += 1
+        }
         
         // set size
         recyclerView.layoutParams = Android.Widget.FrameLayout.FLayoutParams(width: Int(frameDp.width), height: Int(frameDp.height))
@@ -357,6 +419,7 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
             //if cell !== viewHolder.cell {
             
             viewHolder.cell = cell
+            //findEdittexts(cell.androidView)
             viewHolder.addChildView(cell.androidView)
             //}
             
@@ -365,6 +428,34 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
             self.visibleCells[indexPath] = cell
         }
     }
+    /*
+     private func findEdittexts(_ itemView: AndroidView) {
+     
+     if itemView is AndroidViewGroup {
+     
+     guard let viewGroupCell = AndroidViewGroup(casting: itemView)
+     else { return }
+     
+     let childrenCount = viewGroupCell.getChildCount()
+     NSLog("rv:: itemView is ViewGroup children: \(childrenCount)")
+     for index in 0..<childrenCount {
+     
+     let view = viewGroupCell.getChildAt(index: index)
+     findEdittexts(view)
+     }
+     } else {
+     NSLog("rv:: itemView is \(type(of: itemView))")
+     setListenerToView(itemView)
+     
+     /*if itemView is AndroidEditText {
+     
+     if let editText = AndroidEditText(casting: itemView) {
+     
+     setListenerToEdittext(editText)
+     }
+     }*/
+     }
+     }*/
     
     override func getItemCount() -> Int {
         
@@ -448,6 +539,8 @@ internal extension UITableView {
             contentView.androidView.removeAllViews()
             contentView.androidView.layoutParams = view.layoutParams
             contentView.androidView.addView(view)
+            
+            
         }
     }
 }
