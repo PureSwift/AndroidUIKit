@@ -161,7 +161,7 @@ fileprivate extension AndroidUIKitMainActivity {
             let screenHeight = activityRootView.rootView!.getHeight()
             
             let heightDiff = screenHeight - self.r.height()
-            //NSLog("rv:: OnGlobalLayoutListener: hd: \(heightDiff) = sh: \(screenHeight) - kh: \(self.r.height())")
+            NSLog("rv:: OnGlobalLayoutListener: hd: \(heightDiff) = sh: \(screenHeight) - kh: \(self.r.height())")
             let isOpen = Double(heightDiff) > ( Double(screenHeight) * 0.15)
             
             if isOpen == self.wasOpened {

@@ -123,13 +123,11 @@ final public class UITableView: UIView {
                     
                     UIApplication.shared.androidActivity.runOnMainThread {
                         
-                        NSLog("rv:: reduceRecycler after 0.9")
                         self.reduceRecyclerViewSize()
                     }
                 }
             } else {
                 
-                NSLog("rv:: reduceRecycler")
                 self.reduceRecyclerViewSize()
             }
         }
@@ -142,6 +140,8 @@ final public class UITableView: UIView {
                     
                     NSLog("rv:: enlargeRecyclerView h: \(self.recyclerViewHeight) - w: \(self.recyclerViewWidth)")
                     self.recyclerView?.layoutParams = AndroidFrameLayoutLayoutParams(width: self.recyclerViewWidth, height: self.recyclerViewHeight)
+                    
+                    self.adapter?.selectedEditText?.clearFocus()
                 }
             }
         }
@@ -193,16 +193,19 @@ final public class UITableView: UIView {
         recyclerView.setX(x: Float(frameDp.minX))
         recyclerView.setY(y: Float(frameDp.minY))
         
-        if(Int(frameDp.width) > 0 && Int(frameDp.height) > 0 && counter == 0){
-            
-            recyclerViewHeight = Int(frameDp.height)
-            recyclerViewWidth = Int(frameDp.width)
-            NSLog("rv:: h: \(recyclerViewHeight) - w: \(recyclerViewWidth)")
-            counter += 1
-        }
-        
         // set size
         recyclerView.layoutParams = Android.Widget.FrameLayout.FLayoutParams(width: Int(frameDp.width), height: Int(frameDp.height))
+        
+        let rvw = recyclerView.layoutParams!.width
+        let rvh = recyclerView.layoutParams!.height
+        
+        if(rvw > 0 && rvw > recyclerViewWidth && rvh > 0 && rvh > recyclerViewHeight){
+            
+            recyclerViewHeight = rvh
+            recyclerViewWidth = rvw
+            //NSLog("rv:: xxx h: \(recyclerViewHeight) - w: \(recyclerViewWidth)")
+            counter += 1
+        }
     }
     
     public func reloadData() {
@@ -326,6 +329,8 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
     
     internal private(set) var indexPaths = [Int: IndexPath]()
     
+    internal var selectedEditText: AndroidEditText?
+    
     convenience init(tableView: UITableView) {
         self.init(javaObject: nil)
         bindNewJavaObject()
@@ -419,7 +424,7 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
             //if cell !== viewHolder.cell {
             
             viewHolder.cell = cell
-            //findEdittexts(cell.androidView)
+            findEdittexts(cell.androidView)
             viewHolder.addChildView(cell.androidView)
             //}
             
@@ -428,34 +433,55 @@ internal class UITableViewRecyclerViewAdapter: AndroidWidgetRecyclerViewAdapter 
             self.visibleCells[indexPath] = cell
         }
     }
-    /*
-     private func findEdittexts(_ itemView: AndroidView) {
-     
-     if itemView is AndroidViewGroup {
-     
-     guard let viewGroupCell = AndroidViewGroup(casting: itemView)
-     else { return }
-     
-     let childrenCount = viewGroupCell.getChildCount()
-     NSLog("rv:: itemView is ViewGroup children: \(childrenCount)")
-     for index in 0..<childrenCount {
-     
-     let view = viewGroupCell.getChildAt(index: index)
-     findEdittexts(view)
-     }
-     } else {
-     NSLog("rv:: itemView is \(type(of: itemView))")
-     setListenerToView(itemView)
-     
-     /*if itemView is AndroidEditText {
-     
-     if let editText = AndroidEditText(casting: itemView) {
-     
-     setListenerToEdittext(editText)
-     }
-     }*/
-     }
-     }*/
+    
+    let viewGroupTypes = ["FrameLayout", "LinearLayout", "RelativeLayout", "ViewGroup"]
+    let edittextTypes = ["EditText", "AppCompatEditText"]
+    
+    private func findEdittexts(_ itemView: AndroidView) {
+        
+        let itemViewName = itemView.getClass().getSimpleName()!
+        
+        if viewGroupTypes.contains(itemViewName) {
+            
+            guard let viewGroup = AndroidViewGroup(casting: itemView)
+                else { return }
+            
+            let childrenCount = viewGroup.getChildCount()
+            
+            for index in 0..<childrenCount {
+                
+                let view = viewGroup.getChildAt(index: index)
+                findEdittexts(view)
+            }
+            
+        } else {
+            
+            if edittextTypes.contains(itemViewName) {
+                
+                if let editText = AndroidEditText(casting: itemView) {
+                    
+                    setListenerToEdittext(editText)
+                }
+            }
+        }
+    }
+    
+    private func setListenerToEdittext(_ editText: AndroidEditText){
+        
+        editText.setShowSoftInputOnFocus(false)
+        editText.setOnFocusChangeListener{ view, hasFocus in
+            
+            guard let view = view
+                else { return }
+            
+            if hasFocus {
+                
+                self.selectedEditText = editText
+                UIApplication.shared.androidActivity.reduceHeigthRecyclerView?()
+                UIApplication.shared.androidActivity.showKeyboard(view)
+            }
+        }
+    }
     
     override func getItemCount() -> Int {
         
