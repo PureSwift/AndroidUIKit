@@ -294,7 +294,7 @@ open class UIView: UIResponder {
     private var _bounds = CGRect()
     
     private func boundsDidChange(from oldBounds: CGRect, to newBounds: CGRect) {
-        NSLog("\(#function) oldBounds: \(oldBounds) and newBounds: \(newBounds)")
+        NSLog("rv:: \(#function) oldBounds: \(oldBounds) and newBounds: \(newBounds)")
         // bounds changed
         guard oldBounds != newBounds else { return }
         

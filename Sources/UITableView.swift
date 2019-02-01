@@ -188,6 +188,10 @@ final public class UITableView: UIView {
             else { return }
         
         let frameDp = bounds.applyingDP()
+        let frDp = frame.applyingDP()
+        
+        NSLog("rv:: updateRecyclerViewFrame bounds h: \(frameDp.height) - w: \(frameDp.width)")
+        NSLog("rv:: updateRecyclerViewFrame  frame h: \(frDp.height) - w: \(frDp.width)")
         
         // set origin
         recyclerView.setX(x: Float(frameDp.minX))
@@ -199,11 +203,11 @@ final public class UITableView: UIView {
         let rvw = recyclerView.layoutParams!.width
         let rvh = recyclerView.layoutParams!.height
         
-        if(rvw > 0 && rvw > recyclerViewWidth && rvh > 0 && rvh > recyclerViewHeight){
+        if rvw > recyclerViewWidth && rvh > recyclerViewHeight {
             
             recyclerViewHeight = rvh
             recyclerViewWidth = rvw
-            //NSLog("rv:: xxx h: \(recyclerViewHeight) - w: \(recyclerViewWidth)")
+            NSLog("rv:: updateRecyclerViewFrame h: \(recyclerViewHeight) - w: \(recyclerViewWidth)")
             counter += 1
         }
     }
