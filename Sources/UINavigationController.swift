@@ -333,7 +333,6 @@ public extension UINavigationController {
         
         formerTopViewController?.removeFromParent()
         
-        self.isToolbarHidden = false
         self.setNavigationBarHidden(false, animated: false)
         
         if( parent is UITabBarController ) {
@@ -344,6 +343,7 @@ public extension UINavigationController {
             tabBarControllerParent.navigationBar.popItem(animated: false)
         } else {
             
+            self.isToolbarHidden = false
             navigationBar.popItem(animated: false)
         }
         
