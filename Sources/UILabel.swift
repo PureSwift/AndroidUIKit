@@ -60,7 +60,7 @@ open class UILabel: UIView {
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
-        NSLog("\((type: self)) \(#function) ")
+        NSLog("\(Swift.type(of: self)) \(#function) ")
         // disable user interaction
         //self.isUserInteractionEnabled = false
         

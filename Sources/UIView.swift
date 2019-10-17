@@ -66,7 +66,7 @@ open class UIView: UIResponder {
     
     internal func updateAndroidViewSize() {
         
-        NSLog("\((type: self)) \(#function) \(Int(frame.width)) - \(Int(frame.height))")
+        NSLog("\(Swift.type(of: self)) \(#function) \(Int(frame.width)) - \(Int(frame.height))")
         
         let frameDp = frame.applyingDP()
         
@@ -395,7 +395,7 @@ open class UIView: UIResponder {
     @inline(__always)
     private func addSubview(_ view: UIView, _ body: (inout [UIView], UIView) -> ()) {
         
-        NSLog("\((type: self)) \(#function) \(Int(frame.width)) - \(Int(frame.height))")
+        NSLog("\(Swift.type(of: self)) \(#function) \(Int(frame.width)) - \(Int(frame.height))")
         
         let oldWindow = view.window
         let newWindow = self.window
@@ -418,15 +418,15 @@ open class UIView: UIResponder {
         view.didMoveToSuperview()
         // Android
         
-        NSLog("\((type: self)) \(#function) addViewByIndex: \(addViewByIndex)")
+        NSLog("\(Swift.type(of: self)) \(#function) addViewByIndex: \(addViewByIndex)")
         if(addViewByIndex != -1){
             
-            NSLog("\((type: self)) \(#function) yes by addViewByIndex: \(addViewByIndex)")
+            NSLog("\(Swift.type(of: self)) \(#function) yes by addViewByIndex: \(addViewByIndex)")
             androidView.addView(view.androidView, index: addViewByIndex)
             addViewByIndex = -1
         }else{
             
-            NSLog("\((type: self)) \(#function) not by addViewByIndex")
+            NSLog("\(Swift.type(of: self)) \(#function) not by addViewByIndex")
             androidView.addView(view.androidView)
         }
         

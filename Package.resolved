@@ -6,43 +6,43 @@
         "repositoryURL": "https://github.com/PureSwift/Android.git",
         "state": {
           "branch": "master",
-          "revision": "16eb8a2339e8bc3239695015da4c21b1d9e7be98",
+          "revision": "937413a8f7f741466850eb792f4f162378bb7b65",
           "version": null
         }
       },
       {
         "package": "CJavaVM",
-        "repositoryURL": "https://github.com/SwiftJava/CJavaVM.git",
+        "repositoryURL": "https://github.com/PureSwift/CJavaVM.git",
         "state": {
-          "branch": null,
-          "revision": "18c304400b1043b79529d7987ece858ed46aa232",
-          "version": "2.4.0"
+          "branch": "master",
+          "revision": "3b19893aa50a724c467d341c482087c30323b190",
+          "version": null
         }
       },
       {
         "package": "java_lang",
-        "repositoryURL": "https://github.com/SwiftJava/java_lang.git",
+        "repositoryURL": "https://github.com/PureSwift/java_lang.git",
         "state": {
-          "branch": null,
-          "revision": "2617a2065e53fe0a1cf1151d3ccf40a435a3eeb8",
-          "version": "2.4.0"
+          "branch": "master",
+          "revision": "e308632de721a79119b4a76e3b62faf5893d4cad",
+          "version": null
         }
       },
       {
         "package": "java_swift",
-        "repositoryURL": "https://github.com/SwiftJava/java_swift.git",
+        "repositoryURL": "https://github.com/PureSwift/java_swift.git",
         "state": {
-          "branch": null,
-          "revision": "6172ff68d6fc575f3f4b9adc2bc8e1362f1b1dd9",
-          "version": "2.4.0"
+          "branch": "master",
+          "revision": "65deecc81042d0839a7496450109cafd2a0e1741",
+          "version": null
         }
       },
       {
         "package": "java_util",
-        "repositoryURL": "https://github.com/SwiftJava/java_util.git",
+        "repositoryURL": "https://github.com/PureSwift/java_util.git",
         "state": {
           "branch": "master",
-          "revision": "faf8e50be4ee3059d4f6da6ba7f0ec7ba2bea7e9",
+          "revision": "5cad067437a2567ffcf0ba9ea1c2f19d8b414d61",
           "version": null
         }
       },
@@ -51,7 +51,7 @@
         "repositoryURL": "https://github.com/PureSwift/JNI.git",
         "state": {
           "branch": "master",
-          "revision": "66ba5d594d654c4565dc7873e7daa5a60ce814ad",
+          "revision": "29239efbdd3370dc17f06f9df5380ecd2997370c",
           "version": null
         }
       }
